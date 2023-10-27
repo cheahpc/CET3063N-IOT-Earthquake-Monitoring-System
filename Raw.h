@@ -5,16 +5,15 @@ int status;
 void setup() {
   // Initialize sensor, wifi, etc
   initNode();
-
 }
 
 WiFiClient client;
 void loop() {
   // check if the server is established
   client = server.available();
-  if(!client) return;
+  if (!client) return;
   // wait until the client sends the data
-  while(!client.available()) delay(1);
+  while (!client.available()) delay(1);
 
   String request = client.readStringUntil('\r');
   Serial.println(request);
@@ -24,7 +23,7 @@ void loop() {
   client.println("HTTP/1.1 200 ok");
   client.println("Content-Type: text/html");
   client.println("");
-  
+
   client.println("<!DOCTYPE HTML>");
   client.println("<html>");
   client.println("<head>");

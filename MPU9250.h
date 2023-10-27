@@ -1,3 +1,5 @@
+#include "Wire.h"
+#include "I2C.h"
 // -------------------------------------------------
 // Usage - Function
 // -------------------------------------------------
@@ -7,7 +9,7 @@
 // getTemp();
 
 // Define debug to print respective value
-#define DEBUG_ACCEL  // Accelerator
+// #define DEBUG_ACCEL  // Accelerator
 // #define DEBUG_GYRO // Gyroscope
 // #define DEBUG_MAGNETO  // Magnetometer
 // #define DEBUG_TEMP // Temperature
@@ -324,3 +326,25 @@ float getTemp(int index = 0) {
 }
 #endif
 #pragma endregion Temp
+
+#pragma region Init
+void initMPU9250() {
+  // Initialize Sensor node
+  // Begin Wire
+  Wire.begin();
+// ------------------------------------------------ MPU9250 Init
+#ifdef ENABLE_ACCEL
+  I2CwriteByte(0x68, 28, ACC_FULL_SCALE_2G);  // Configure accelerometer range
+#endif
+
+#ifdef ENABLE_GYRO
+  I2CwriteByte(0x68, 27, GYRO_FULL_SCALE_1000_DPS);  // Configure gyroscope range
+#endif
+
+#ifdef ENABLE_MAGNETO
+  I2CwriteByte(0x68, 55, 0x02);  // Set by pass mode for the magnetometers
+  initMagnetometer();
+  I2CwriteByte(0x68, 56, 0x01);  // Enable interrupt pin for raw data
+#endif
+}
+#pragma endregion Init

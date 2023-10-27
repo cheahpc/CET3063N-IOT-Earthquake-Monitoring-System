@@ -4,7 +4,6 @@ unsigned long currentMillis = millis();
 void setup() {
   // Initialize sensor, wifi, etc
   initNode();
-  
 }
 
 void loop() {
