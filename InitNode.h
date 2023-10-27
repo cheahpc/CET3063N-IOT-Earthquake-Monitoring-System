@@ -3,7 +3,12 @@
 // #define ALARM
 
 // Initialize all necessary library and values
+// #include <WiFi.h>
 #include <ESP8266WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
+
 #ifdef SENSOR
 #include "Wire.h"
 #include "I2C.h"
@@ -13,9 +18,17 @@
 // -------------------------------------------------
 // Wifi Value
 // -------------------------------------------------
-const char* ssid = "earth";
-const char* password = "12345678";
-WiFiServer server(80);
+#define SSID "PasswordIsPassword"
+#define PASSWORD "password"
+#define API_KEY "AIzaSyDIW_bDNu-CQN1ZQFZNeGt3XXdZSYAjIzg"
+#define DB_URL "https://earthquake-7ad7f-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig fbconfig;
+
+unsigned long sendDataPrevMillis = 0;
+bool signupOK = false;
 
 // -------------------------------------------------
 // Init Node
@@ -51,19 +64,31 @@ void initNode() {
 
 #endif
   // Wifi Init
-  // Connect to wifi
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
+  Serial.println("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
     Serial.print(".");
+    delay(300);
   }
-  server.begin();
+
+  Serial.println("");
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
   Serial.println();
-  Serial.println("Server started at port 80.");
-  Serial.println("Controller has connected to WLAN");
-  // Print some message
-  Serial.print("URL=http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("/");
+
+  fbconfig.api_key = API_KEY;
+  fbconfig.database_url = DB_URL;
+  if (Firebase.signUp(&fbconfig, &auth, "", "")) {
+    Serial.print("signUP OK");
+    signupOK = true;
+  } else {
+    Serial.printf("%s\n", fbconfig.signer.signupError.message.c_str());
+  };
+
+  fbconfig.token_status_callback = tokenStatusCallback;
+  Firebase.begin(&fbconfig, &auth);
+  Firebase.reconnectWiFi(true);
+
+  // Connect to wifi
 }
 #pragma endregion setup_init

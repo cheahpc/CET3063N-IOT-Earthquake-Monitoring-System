@@ -1,13 +1,11 @@
 #include "InitNode.h"
 
-
 int status;
 
 void setup() {
   // Initialize sensor, wifi, etc
   initNode();
 
-  
 }
 
 WiFiClient client;
@@ -21,8 +19,6 @@ void loop() {
   String request = client.readStringUntil('\r');
   Serial.println(request);
   client.flush();
-
-  IMU.readSensor();
 
   // landing page for the controller
   client.println("HTTP/1.1 200 ok");
