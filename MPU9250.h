@@ -1,8 +1,16 @@
+// -------------------------------------------------
+// Usage - Function
+// -------------------------------------------------
+// getAccel();
+// getGyro();
+// getMag();
+// getTemp();
+
 // Define debug to print respective value
-#define debugA  // Accelerator
-// #define debugG // Gyroscope
-#define debugM  // Magnetometer
-// #define debugT // Temperature
+#define DEBUG_ACCEL  // Accelerator
+// #define DEBUG_GYRO // Gyroscope
+// #define DEBUG_MAGNETO  // Magnetometer
+// #define DEBUG_TEMP // Temperature
 
 // Define enable sensor
 #define ENABLE_ACCEL
@@ -11,12 +19,10 @@
 // #define ENABLE_TEMP
 
 // -------------------------------------------------
-// Define value
+// Glbal value
 // -------------------------------------------------
-
+#define ROUND_VALUE 2
 #define INTERVAL_MS_PRINT 100
-
-#define G 9.80665
 
 
 struct {
@@ -27,13 +33,25 @@ struct {
   float temperature;
 } normalized;
 
-unsigned long lastPrintMillis = 0;
-unsigned long lastSampleMicros = 0;
+// -------------------------------------------------
+// Function
+// -------------------------------------------------
+bool isImuReady() {
+  uint8_t isReady;  // Interruption flag
+  I2Cread(0x68, 58, 1, &isReady);
+  return isReady & 0x01;  // Read register and wait for the RAW_DATA_RDY_INT
+}
 
+bool isMagnetometerReady() {
+  uint8_t isReady;  // Interruption flag
+  I2Cread(0x0C, 0x02, 1, &isReady);
+  return isReady & 0x01;  // Read register and wait for the DRDY
+}
 
 // -------------------------------------------------
 // Accelerometer
 // -------------------------------------------------
+#pragma region Accel
 #ifdef ENABLE_ACCEL
 #define ACC_FULL_SCALE_2G 0x00
 #define ACC_FULL_SCALE_4G 0x08
@@ -59,15 +77,50 @@ void readRawAccel() {
 
 void normalize(accelerometer_raw accelerometer) {
   // Sensitivity Scale Factor (MPU datasheet page 9)
-  normalized.accelerometer.x = accelerometer.x * G / 16384;
-  normalized.accelerometer.y = accelerometer.y * G / 16384;
-  normalized.accelerometer.z = accelerometer.z * G / 16384;
+  normalized.accelerometer.x = accelerometer.x * 9.80665 / 16384;
+  normalized.accelerometer.y = accelerometer.y * 9.80665 / 16384;
+  normalized.accelerometer.z = accelerometer.z * 9.80665 / 16384;
+}
+
+float getAccel(int index = 0) {
+  if (isImuReady()) {
+    readRawAccel();
+    normalize(accelerometer);
+  }
+
+  switch (index) {
+    case 1:
+      return normalized.accelerometer.x;
+      break;
+    case 2:
+      return normalized.accelerometer.y;
+      break;
+    case 3:
+      return normalized.accelerometer.z;
+      break;
+    default:
+#ifdef DEBUG_ACCEL
+      Serial.print("Accel:\t");
+      Serial.print("X:");
+      Serial.print(normalized.accelerometer.x, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Y:");
+      Serial.print(normalized.accelerometer.y, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Z:");
+      Serial.print(normalized.accelerometer.z, ROUND_VALUE);
+      Serial.println();
+#endif
+      return 0.0;
+  }
 }
 #endif
+#pragma endregion Accel
 
 // -------------------------------------------------
 // Gyroscope
 // -------------------------------------------------
+#pragma region Gyro
 #ifdef ENABLE_GYRO
 #define GYRO_FULL_SCALE_250_DPS 0x00
 #define GYRO_FULL_SCALE_500_DPS 0x08
@@ -97,11 +150,46 @@ void normalize(gyroscope_raw gyroscope) {
   normalized.gyroscope.y = gyroscope.y / 32.8;
   normalized.gyroscope.z = gyroscope.z / 32.8;
 }
+
+float getGyro(int index = 0) {
+  if (isImuReady()) {
+    readRawGyro();
+    normalize(gyroscope);
+  }
+
+  switch (index) {
+    case 1:
+      return normalized.gyroscope.x;
+      break;
+    case 2:
+      return normalized.gyroscope.y;
+      break;
+    case 3:
+      return normalized.gyroscope.z;
+      break;
+    default:
+#ifdef DEBUG_GYRO
+      Serial.print("Gyro:\t");
+      Serial.print("X:");
+      Serial.print(normalized.gyroscope.x, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Y:");
+      Serial.print(normalized.gyroscope.y, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Z:");
+      Serial.print(normalized.gyroscope.z, ROUND_VALUE);
+      Serial.println();
 #endif
+      return 0.0;
+  }
+}
+#endif
+#pragma endregion Gyro
 
 // -------------------------------------------------
 // Magnetometer
 // -------------------------------------------------
+#pragma region Magneto
 #ifdef ENABLE_MAGNETO
 struct magnetometer_raw {
   int16_t x, y, z;
@@ -151,11 +239,46 @@ void normalize(magnetometer_raw magnetometer) {
   normalized.magnetometer.y = magnetometer.y * 0.15 * (((magnetometer.adjustment.y - 128) / 256) + 1);
   normalized.magnetometer.z = magnetometer.z * 0.15 * (((magnetometer.adjustment.z - 128) / 256) + 1);
 }
+
+float getMag(int index = 0) {
+  if (isMagnetometerReady()) {
+    readRawMagnetometer();
+    normalize(magnetometer);
+  }
+
+  switch (index) {
+    case 1:
+      return normalized.magnetometer.x;
+      break;
+    case 2:
+      return normalized.magnetometer.y;
+      break;
+    case 3:
+      return normalized.magnetometer.z;
+      break;
+    default:
+#ifdef DEBUG_GYRO
+      Serial.print("Mag:\t");
+      Serial.print("X:");
+      Serial.print(normalized.magnetometer.x, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Y:");
+      Serial.print(normalized.magnetometer.y, ROUND_VALUE);
+      Serial.print("\t");
+      Serial.print("Z:");
+      Serial.print(normalized.magnetometer.z, ROUND_VALUE);
+      Serial.println();
 #endif
+      return 0.0;
+  }
+}
+#endif
+#pragma endregion Magneto
 
 // -------------------------------------------------
 // Temperature
 // -------------------------------------------------
+#pragma region Temp
 #ifdef ENABLE_TEMP
 #define TEMPERATURE_OFFSET 21  // As defined in documentation
 
@@ -178,21 +301,26 @@ void normalize(temperature_raw temperature) {
   // Sensitivity Scale Factor (MPU datasheet page 11) & formula (MPU registers page 33)
   normalized.temperature = ((temperature.value - TEMPERATURE_OFFSET) / 333.87) + TEMPERATURE_OFFSET;
 }
+
+float getTemp(int index = 0) {
+  if (isImuReady()) {
+    readRawAccel();
+    normalize(temperature);
+  }
+
+  switch (index) {
+    case 1:
+      return normalized.temperature.x;
+      break;
+    default:
+#ifdef DEBUG_ACCEL
+      Serial.print("Temp:\t");
+      Serial.print("X:");
+      Serial.print(normalized.temperature.x, ROUND_VALUE);
+      Serial.println();
 #endif
-
-// -------------------------------------------------
-// Function
-// -------------------------------------------------
-bool isImuReady() {
-  uint8_t isReady;  // Interruption flag
-  I2Cread(0x68, 58, 1, &isReady);
-  return isReady & 0x01;  // Read register and wait for the RAW_DATA_RDY_INT
+      return 0.0;
+  }
 }
-
-bool isMagnetometerReady() {
-  uint8_t isReady;  // Interruption flag
-  I2Cread(0x0C, 0x02, 1, &isReady);
-  return isReady & 0x01;  // Read register and wait for the DRDY
-}
-void updateIMU() {
-}
+#endif
+#pragma endregion Temp
