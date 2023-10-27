@@ -3,6 +3,7 @@
 // #define ALARM
 
 // Initialize all necessary library and values
+#include <ESP8266WiFi.h>
 #ifdef SENSOR
 #include "Wire.h"
 #include "I2C.h"
@@ -10,14 +11,22 @@
 #endif
 
 // -------------------------------------------------
+// Wifi Value
+// -------------------------------------------------
+const char* ssid = "earth";
+const char* password = "12345678";
+WiFiServer server(80);
+
+// -------------------------------------------------
 // Init Node
 // -------------------------------------------------
+#pragma region setup_init
 void initNode() {
   // Begin serial
   Serial.begin(115200);
+
 #ifdef SENSOR
   // Initialize Sensor node
-
   // Begin Wire
   Wire.begin();
 // MPU9250 Init
@@ -34,7 +43,7 @@ void initNode() {
   initMagnetometer();
   I2CwriteByte(0x68, 56, 0x01);  // Enable interrupt pin for raw data
 #endif
-  
+
 #endif
 
 #ifdef ALARM
@@ -42,4 +51,19 @@ void initNode() {
 
 #endif
   // Wifi Init
+  // Connect to wifi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  server.begin();
+  Serial.println();
+  Serial.println("Server started at port 80.");
+  Serial.println("Controller has connected to WLAN");
+  // Print some message
+  Serial.print("URL=http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("/");
 }
+#pragma endregion setup_init

@@ -1,63 +1,51 @@
-#include "init.h"
+#include "InitNode.h"
+
+
+int status;
 
 void setup() {
   // Initialize sensor, wifi, etc
-  init();
+  initNode();
+
+  
 }
 
+WiFiClient client;
 void loop() {
-  unsigned long currentMillis = millis();
+  // check if the server is established
+  client = server.available();
+  if(!client) return;
+  // wait until the client sends the data
+  while(!client.available()) delay(1);
 
-  if (isImuReady()) {
-    readRawImu();
-    normalize(gyroscope);
-    normalize(accelerometer);
-    normalize(temperature);
-  }
+  String request = client.readStringUntil('\r');
+  Serial.println(request);
+  client.flush();
 
-  if (isMagnetometerReady()) {
-    readRawMagnetometer();
-    normalize(magnetometer);
-  }
+  IMU.readSensor();
 
-  if (currentMillis - lastPrintMillis > INTERVAL_MS_PRINT) {
-    // Serial.print("TEMP:\t");
-    // Serial.print(normalized.temperature, 2);
-    // Serial.print("\xC2\xB0"); //Print degree symbol
-    // Serial.print("C");
-    // Serial.println();
-
-    // Serial.print("GYR (");
-    // Serial.print("\xC2\xB0"); //Print degree symbol
-    // Serial.print("/s):\t");
-    // Serial.print(normalized.gyroscope.x, 1);
-    // Serial.print("\t\t");
-    // Serial.print(normalized.gyroscope.y, 1);
-    // Serial.print("\t\t");
-    // Serial.print(normalized.gyroscope.z, 1);
-    // Serial.println();
-
-    // Serial.print("ACC (m/s^2):\t");
-    Serial.print("X:");
-    Serial.print(normalized.accelerometer.x, 1);
-    Serial.print("\t");
-    Serial.print("Y:");
-    Serial.print(normalized.accelerometer.y, 1);
-    Serial.print("\t");
-    Serial.print("Z:");
-    Serial.print(normalized.accelerometer.z, 1);
-    Serial.println();
-
-    // Serial.print("MAG (");
-    // Serial.print("\xce\xbc"); //Print micro symbol
-    // Serial.print("T):\t");
-    // Serial.print(normalized.magnetometer.x, 1);
-    // Serial.print("\t\t");
-    // Serial.print(normalized.magnetometer.y, 1);
-    // Serial.print("\t\t");
-    // Serial.print(normalized.magnetometer.z, 1);
-    // Serial.println();
-
-    lastPrintMillis = currentMillis;
-  }
+  // landing page for the controller
+  client.println("HTTP/1.1 200 ok");
+  client.println("Content-Type: text/html");
+  client.println("");
+  
+  client.println("<!DOCTYPE HTML>");
+  client.println("<html>");
+  client.println("<head>");
+  client.println("<meta charset='utf-8'/>");
+  client.println("<title>ESP8266</title>");
+  client.println("</head>");
+  client.println("<body>");
+  client.println("<p>Welcome to ESP8266</p><br/>");
+  client.println("Accelerator X: ");
+  client.println(getAccel(1), 6);
+  client.println("<br/>");
+  client.println("Accelerator Y: ");
+  client.println(getAccel(2), 6);
+  client.println("<br/>");
+  client.println("Accelerator Z: ");
+  client.println(getAccel(3), 6);
+  client.println("<br/>");
+  client.println("</body>");
+  client.println("</html>");
 }
