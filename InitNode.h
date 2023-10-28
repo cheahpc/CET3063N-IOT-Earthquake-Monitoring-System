@@ -2,8 +2,9 @@
 #define SENSOR
 // #define ALARM
 
-// Firebase Sign In Method
+// Firebase
 // #define ANONYMOUS
+// #define FIREBASE_VERBOSE
 
 #define DELAY_TIME 20
 

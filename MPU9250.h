@@ -16,9 +16,9 @@
 
 // Define enable sensor
 #define ENABLE_ACCEL
-// #define ENABLE_GYRO
+#define ENABLE_GYRO
 // #define ENABLE_MAGNETO
-// #define ENABLE_TEMP
+#define ENABLE_TEMP
 
 // -------------------------------------------------
 // Glbal value

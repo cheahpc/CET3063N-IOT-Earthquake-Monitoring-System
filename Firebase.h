@@ -32,6 +32,10 @@ bool signupOK = false;
 #define SENSOR_NODE_ACCEL_X_PATH "Sensor Node/Accelerometer/X"
 #define SENSOR_NODE_ACCEL_Y_PATH "Sensor Node/Accelerometer/Y"
 #define SENSOR_NODE_ACCEL_Z_PATH "Sensor Node/Accelerometer/Z"
+#define SENSOR_NODE_GYRO_X_PATH "Sensor Node/Gyro/X"
+#define SENSOR_NODE_GYRO_Y_PATH "Sensor Node/Gyro/Y"
+#define SENSOR_NODE_GYRO_Z_PATH "Sensor Node/Gyro/Z"
+#define SENSOR_NODE_TEMP_Z_PATH "Sensor Node/Temp/Celcius"
 
 #define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor Node/WiFi/Hostname"
 #define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor Node/WiFi/Local IP"
@@ -88,10 +92,12 @@ void fb_SetFloat(String dataPath, float value) {
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setFloat(&fbdo, dataPath, value)) {
+      #ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value);
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
+      #endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -104,8 +110,10 @@ float fb_GetFloat(String dataPath) {
     // Store data to respective datapath
     if (Firebase.RTDB.getFloat(&fbdo, dataPath)) {
       if (fbdo.dataType() == "boolean") {
+        #ifdef FIREBASE_VERBOSE
         Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.floatData() + " (" + fbdo.dataType() + ")");
         return fbdo.floatData();
+        #endif
       }
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
@@ -124,10 +132,12 @@ void fb_SetString(String dataPath, String value) {
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setString(&fbdo, dataPath, value)) {
+      #ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value);
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
+      #endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -142,8 +152,10 @@ String fb_GetString(String dataPath) {
     // Store data to respective datapath
     if (Firebase.RTDB.getString(&fbdo, dataPath)) {
       if (fbdo.dataType() == "string") {
+        #ifdef FIREBASE_VERBOSE
         Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.stringData() + " (" + fbdo.dataType() + ")");
         return fbdo.stringData();
+        #endif
       }
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
@@ -162,10 +174,12 @@ void fb_SetBool(String dataPath, bool value) {
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setBool(&fbdo, dataPath, value)) {
+      #ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value ? "true" : "false");
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
+      #endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -180,8 +194,10 @@ bool fb_GetBool(String dataPath) {
     // Store data to respective datapath
     if (Firebase.RTDB.getBool(&fbdo, dataPath)) {
       if (fbdo.dataType() == "boolean") {
+        #ifdef FIREBASE_VERBOSE
         Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.boolData() + " (" + fbdo.dataType() + ")");
         return fbdo.boolData();
+        #endif
       }
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
@@ -200,10 +216,12 @@ void fb_SetInt(String dataPath, int value) {
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setInt(&fbdo, dataPath, value)) {
+      #ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value);
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
+      #endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -218,8 +236,10 @@ bool fb_GetInt(String dataPath) {
     // Store data to respective datapath
     if (Firebase.RTDB.getInt(&fbdo, dataPath)) {
       if (fbdo.dataType() == "boolean") {
+        #ifdef FIREBASE_VERBOSE
         Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.intData() + " (" + fbdo.dataType() + ")");
         return fbdo.intData();
+        #endif
       }
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
