@@ -1,4 +1,4 @@
-const char MAIN_page[] PROGMEM = R"=====(
+const char main_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 
@@ -176,4 +176,3 @@ const char MAIN_page[] PROGMEM = R"=====(
 </html>
 
 )=====";
-.

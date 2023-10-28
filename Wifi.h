@@ -3,6 +3,7 @@
 #ifdef ALARM
 // #include "WiFiClient.h"
 // #include "WebServer.h"
+#include <ESP8266WebServer.h>
 #include "webpage.h"
 #endif
 // -------------------------------------------------
@@ -19,7 +20,11 @@
 ESP8266WebServer server(80);  //Server on port 80
 #endif
 
-WiFiClient client;
+void root_page() {
+  server.send(200, "text/html",main_page);
+
+  
+}
 void initWifi() {
   //Set new hostname
   WiFi.hostname(HOSTNAME);
@@ -35,13 +40,15 @@ void initWifi() {
 
 #ifdef ALARM
   // Start Server
+ server.on("/", []() {
+    server.sendContent(main_page);
+  });
+ 
   server.begin();
   Serial.println("Web server started");
 
   // Add your web page to the server
-  server.on("/", []() {
-    server.sendContent(MAIN_page);
-  });
+  
 #endif
 }
 

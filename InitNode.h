@@ -1,6 +1,6 @@
 // Define which node to initialize
-#define SENSOR
-// #define ALARM
+// #define SENSOR
+#define ALARM
 
 // Firebase
 // #define ANONYMOUS
@@ -10,6 +10,9 @@
 
 #ifdef SENSOR
 #include "MPU9250.h"
+#endif
+#ifdef ALARM
+#include "Vibrator.h"
 #endif
 
 #include "Wifi.h"
@@ -30,6 +33,7 @@ void initNode() {
 #endif
 // ------------------------------------------------ ALARM Init
 #ifdef ALARM
+  initVibrator();
 // TODO Initialize Alarm Node
 // Initialize Alarm node
 #endif
@@ -49,11 +53,11 @@ void initNode() {
   delay(DELAY_TIME);
 #endif
 #ifdef ALARM
-  fb_SetString(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname);
+  fb_SetString(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
   delay(DELAY_TIME);
-  fb_SetString(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP);
+  fb_SetString(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
   delay(DELAY_TIME);
-  fb_SetString(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength);
+  fb_SetString(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
   delay(DELAY_TIME);
 #endif
 }

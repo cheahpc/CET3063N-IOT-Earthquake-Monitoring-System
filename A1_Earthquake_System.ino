@@ -1,6 +1,6 @@
 #include "InitNode.h"
 
-int status;
+
 
 void setup() {
   // Initialize Sensor, Wifi, Firebase
@@ -36,7 +36,18 @@ void loop() {
 #endif
 
 #ifdef ALARM
-  setHostname(getHostname());
+  float magnitude = fb_GetFloat(EARTHQUAKE_MAGNITUDE_PATH);
+  Serial.println(magnitude);
+  if (magnitude > 20) {
+    aWriteVibrator(255);
+  } else {
+    aWriteVibrator(80);
+  }
   server.handleClient();
+
+  // Update the value of the element with the id "value1" every second
+  HTMLElement* element = document.getElementById("nodeWiFiSignalStrength");
+  element.innerHTML = magnitude;
+  // delay(1000);
 #endif
 }
