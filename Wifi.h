@@ -16,15 +16,15 @@
 #endif
 #ifdef ALARM
 #define HOSTNAME "ALARM_NODE"
+
+char XML[2048];
+char buf[32];
 // Create a web server object
 ESP8266WebServer server(80);  //Server on port 80
 #endif
 
-void root_page() {
-  server.send(200, "text/html",main_page);
 
-  
-}
+
 void initWifi() {
   //Set new hostname
   WiFi.hostname(HOSTNAME);
@@ -38,18 +38,6 @@ void initWifi() {
     delay(300);
   }
 
-#ifdef ALARM
-  // Start Server
- server.on("/", []() {
-    server.sendContent(main_page);
-  });
- 
-  server.begin();
-  Serial.println("Web server started");
-
-  // Add your web page to the server
-  
-#endif
 }
 
 String wifi_GetLocalIP() {
@@ -63,6 +51,5 @@ String wifi_GetHostname() {
 String wifi_GetSignalStrength() {
   return String(WiFi.RSSI());
 }
-
 
 // TODO send html page to client with information.

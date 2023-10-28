@@ -1,53 +1,80 @@
 #include "InitNode.h"
 
+#pragma region test
+#ifdef ALARM
+void SendWebsite() {
+  Serial.println("sending web page");
+  server.send(200, "text/html", main_page);
+}
 
+void ProcessButton_0() {
+  Serial.println("Alarm Muted");
+
+  // option 1 -- keep page live but dont send any thing
+  // here i don't need to send and immediate status, any status
+  // like the illumination status will be send in the main XML page update
+  // code
+  server.send(200, "text/plain", ""); //Send web page
+
+  // option 2 -- keep page live AND send a status
+  // if you want to send feed back immediataly
+  // note you must have reading code in the java script
+  /*
+    if (LED0) {
+    server.send(200, "text/plain", "1"); //Send web page
+    }
+    else {
+    server.send(200, "text/plain", "0"); //Send web page
+    }
+  */
+}
+
+void SendXML() {
+  strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
+
+  strcat(XML, "<Sensor>\n");
+
+  strcat(XML, "<Wifi>\n");
+  sprintf(buf, "<Hostname>%s</Hostname>\n", fb_GetString(SENSOR_NODE_WIFI_HOSTNAME_PATH));
+  strcat(XML, buf);
+  sprintf(buf, "<Local_IP>%s</Local_IP>\n", fb_GetString(SENSOR_NODE_WIFI_LOCAL_IP_PATH));
+  strcat(XML, buf);
+  sprintf(buf, "<Signal_Strength>%s</Signal_Strength>\n", fb_GetString(SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH));
+  strcat(XML, buf);
+  strcat(XML, "</Wifi>\n");
+
+  strcat(XML, "</Sensor>\n");
+
+  strcat(XML, "</Data>\n");
+
+  Serial.println(XML);
+  // Send XML
+  server.send(200, "text/xml", XML);
+}
+#endif
+#pragma endregion test
 
 void setup() {
-  // Initialize Sensor, Wifi, Firebase
+
   initNode();
+  
+#ifdef ALARM
+  server.on("/", SendWebsite);
+  // server.on("/xml", SendXML);
+  server.on("/TEMPread", handleTEMP);
+  server.on("/BUTTON_0", ProcessButton_0);
+
+  // Start Server
+  server.begin();
+  // Add your web page to the server
+  Serial.println("Web server started");
+#endif
+
 }
 
 void loop() {
-#ifdef SENSOR
-  fb_SetFloat(SENSOR_NODE_ACCEL_X_PATH, imu_GetAccel(1));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_ACCEL_Y_PATH, imu_GetAccel(2));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_ACCEL_Z_PATH, imu_GetAccel(3));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_GYRO_X_PATH, imu_GetGyro(1));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_GYRO_Y_PATH, imu_GetGyro(2));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_GYRO_Z_PATH, imu_GetGyro(3));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_MAG_X_PATH, imu_GetMag(1));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_MAG_Y_PATH, imu_GetMag(2));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_MAG_Z_PATH, imu_GetMag(3));
-  delay(DELAY_TIME);
-  fb_SetFloat(SENSOR_NODE_TEMP_PATH, imu_GetTemp());
-  delay(DELAY_TIME);
-  fb_SetFloat(EARTHQUAKE_MAGNITUDE_PATH, e_GetEarthquakeMagnitude((1), imu_GetAccel(2), imu_GetAccel(3)));
-  delay(DELAY_TIME);
-  fb_SetInt(EARTHQUAKE_LEVEL_PATH, e_GetEarthquakeLevel(imu_GetAccel(1), imu_GetAccel(2), imu_GetAccel(3)));
-  delay(DELAY_TIME);
-#endif
 
-#ifdef ALARM
-  float magnitude = fb_GetFloat(EARTHQUAKE_MAGNITUDE_PATH);
-  Serial.println(magnitude);
-  if (magnitude > 20) {
-    aWriteVibrator(255);
-  } else {
-    aWriteVibrator(80);
-  }
   server.handleClient();
-
-  // Update the value of the element with the id "value1" every second
-  HTMLElement* element = document.getElementById("nodeWiFiSignalStrength");
-  element.innerHTML = magnitude;
-  // delay(1000);
-#endif
 }
+
+
