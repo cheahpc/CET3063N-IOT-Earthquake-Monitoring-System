@@ -1,6 +1,6 @@
 // Define which node to initialize
-#define SENSOR
-// #define ALARM
+// #define SENSOR
+#define ALARM
 
 #ifdef SENSOR
 #include "MPU9250.h"
