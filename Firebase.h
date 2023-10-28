@@ -35,7 +35,10 @@ bool signupOK = false;
 #define SENSOR_NODE_GYRO_X_PATH "Sensor Node/Gyro/X"
 #define SENSOR_NODE_GYRO_Y_PATH "Sensor Node/Gyro/Y"
 #define SENSOR_NODE_GYRO_Z_PATH "Sensor Node/Gyro/Z"
-#define SENSOR_NODE_TEMP_Z_PATH "Sensor Node/Temp/Celcius"
+#define SENSOR_NODE_MAG_X_PATH "Sensor Node/Magnetometer/X"
+#define SENSOR_NODE_MAG_Y_PATH "Sensor Node/Magnetometer/Y"
+#define SENSOR_NODE_MAG_Z_PATH "Sensor Node/Magnetometer/Z"
+#define SENSOR_NODE_TEMP_PATH "Sensor Node/Temp/Celcius"
 
 #define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor Node/WiFi/Hostname"
 #define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor Node/WiFi/Local IP"

@@ -17,11 +17,11 @@
 // Define enable sensor
 #define ENABLE_ACCEL
 #define ENABLE_GYRO
-// #define ENABLE_MAGNETO
+#define ENABLE_MAGNETO
 #define ENABLE_TEMP
 
 // -------------------------------------------------
-// Glbal value
+// Global value
 // -------------------------------------------------
 #define ROUND_VALUE 2
 #define INTERVAL_MS_PRINT 100
@@ -251,10 +251,8 @@ float imu_GetMag(int index = 0) {
   switch (index) {
     case 1:
       return normalized.magnetometer.x;
-      break;
     case 2:
       return normalized.magnetometer.y;
-      break;
     case 3:
       return normalized.magnetometer.z;
       break;
@@ -306,23 +304,17 @@ void normalize(temperature_raw temperature) {
 
 float imu_GetTemp(int index = 0) {
   if (isImuReady()) {
-    readRawAccel();
+    readRawTemp();
     normalize(temperature);
   }
 
-  switch (index) {
-    case 1:
-      return normalized.temperature.x;
-      break;
-    default:
 #ifdef DEBUG_ACCEL
-      Serial.print("Temp:\t");
-      Serial.print("X:");
-      Serial.print(normalized.temperature.x, ROUND_VALUE);
-      Serial.println();
+  Serial.print("Temp:\t");
+  Serial.print("X:");
+  Serial.print(normalized.temperature, ROUND_VALUE);
+  Serial.println();
 #endif
-      return 0.0;
-  }
+  return normalized.temperature;
 }
 #endif
 #pragma endregion Temp

@@ -6,7 +6,7 @@
 // #define ANONYMOUS
 // #define FIREBASE_VERBOSE
 
-#define DELAY_TIME 20
+#define DELAY_TIME 0
 
 #ifdef SENSOR
 #include "MPU9250.h"
@@ -15,7 +15,6 @@
 #include "Wifi.h"
 #include "Firebase.h"
 #include "Earthquake.h"
-
 
 // -------------------------------------------------
 // Init Node
