@@ -8,18 +8,17 @@ const float earthquakeThresholds[] = {
 };
 
 // Calculate the magnitude of the acceleration
-float getEarthquakeMagnitude() {
-  return sqrt(pow(getAccel(1), 2) + pow(getAccel(2), 2) + pow(getAccel(3), 2));
+float e_GetEarthquakeMagnitude(float val1, float val2, float val3) {
+  return sqrt(pow(val1, 2) + pow(val2, 2) + pow(val3, 2));
 }
-
 // Get the earthquake level
-int getEarthquakeLevel() {
-  float magnitude = getEarthquakeMagnitude();
+int e_GetEarthquakeLevel(float val1, float val2, float val3) {
+  float magnitude = e_GetEarthquakeMagnitude(val1, val2, val3);
   // Determine the earthquake level based on the magnitude
   for (int i = 0; i < sizeof(earthquakeThresholds) / sizeof(float); i++) {
     if (magnitude >= earthquakeThresholds[i]) {
       return i;
-      break;
     }
   }
+  return -1;
 }

@@ -3,10 +3,10 @@
 // -------------------------------------------------
 // Usage - Function
 // -------------------------------------------------
-// getAccel();
-// getGyro();
-// getMag();
-// getTemp();
+// imu_GetAccel();
+// imu_GetGyro();
+// imu_GetMag();
+// imu_GetTemp();
 
 // Define debug to print respective value
 // #define DEBUG_ACCEL  // Accelerator
@@ -84,7 +84,7 @@ void normalize(accelerometer_raw accelerometer) {
   normalized.accelerometer.z = accelerometer.z * 9.80665 / 16384;
 }
 
-float getAccel(int index = 0) {
+float imu_GetAccel(int index = 0) {
   if (isImuReady()) {
     readRawAccel();
     normalize(accelerometer);
@@ -153,7 +153,7 @@ void normalize(gyroscope_raw gyroscope) {
   normalized.gyroscope.z = gyroscope.z / 32.8;
 }
 
-float getGyro(int index = 0) {
+float imu_GetGyro(int index = 0) {
   if (isImuReady()) {
     readRawGyro();
     normalize(gyroscope);
@@ -242,7 +242,7 @@ void normalize(magnetometer_raw magnetometer) {
   normalized.magnetometer.z = magnetometer.z * 0.15 * (((magnetometer.adjustment.z - 128) / 256) + 1);
 }
 
-float getMag(int index = 0) {
+float imu_GetMag(int index = 0) {
   if (isMagnetometerReady()) {
     readRawMagnetometer();
     normalize(magnetometer);
@@ -304,7 +304,7 @@ void normalize(temperature_raw temperature) {
   normalized.temperature = ((temperature.value - TEMPERATURE_OFFSET) / 333.87) + TEMPERATURE_OFFSET;
 }
 
-float getTemp(int index = 0) {
+float imu_GetTemp(int index = 0) {
   if (isImuReady()) {
     readRawAccel();
     normalize(temperature);
