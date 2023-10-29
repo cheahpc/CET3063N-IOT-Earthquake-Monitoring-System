@@ -1,23 +1,28 @@
-// Define which node to initialize
+// -------------------------------------------------
+// Node Option - Select which node to upload
+// -------------------------------------------------
 // #define SENSOR
 #define ALARM
 
-// Firebase
+// -------------------------------------------------
+// Firebase Option
+// -------------------------------------------------
 // #define ANONYMOUS
 // #define FIREBASE_VERBOSE
 
-#define DELAY_TIME 0
+#define DELAY_TIME 10
 
+#include "Wifi.h"
+#include "Firebase.h"
+#include "Earthquake.h"
 #ifdef SENSOR
 #include "MPU9250.h"
 #endif
 #ifdef ALARM
 #include "Vibrator.h"
+#include "Server.h"
 #endif
 
-#include "Wifi.h"
-#include "Firebase.h"
-#include "Earthquake.h"
 
 // -------------------------------------------------
 // Init Node
@@ -31,11 +36,10 @@ void initNode() {
 #ifdef SENSOR
   initMPU9250();
 #endif
-// ------------------------------------------------ ALARM Init
+// ------------------------------------------------ Vibrator Init
 #ifdef ALARM
   initVibrator();
 // TODO Initialize Alarm Node
-// Initialize Alarm node
 #endif
 
   // ------------------------------------------------ Wifi Init
@@ -59,6 +63,18 @@ void initNode() {
   delay(DELAY_TIME);
   fb_SetString(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
   delay(DELAY_TIME);
+
+  // ------------------------------------------------ Server Init
+  server.on("/", SendWebsite);
+  server.on("/connectionXML", SendConnectionXML);
+  server.on("/sensorXML", SendSensorXML);
+  server.on("/btnMute", handleBtnMute);
+
+  // Start Server
+  server.begin();
+  // Add your web page to the server
+  Serial.println("Web server started");
 #endif
+
 }
 #pragma endregion setup_init
