@@ -1,0 +1,36 @@
+<?xml version='1.0'?>
+<Data>
+  <Sensor>
+    <Wifi>
+      <Hostname>sensor-node-1</Hostname>
+      <Local_IP>192.168.1.100</Local_IP>
+      <Signal_Strength>-50</Signal_Strength>
+    </Wifi>
+    <Accelerator>
+      <X>347</X>
+      <Y>135</Y>
+      <Z>100</Z>
+    </Accelerator>
+    <Gyroscope>
+      <X>10</X>
+      <Y>-10</Y>
+      <Z>-10</Z>
+    </Gyroscope>
+    <Magnetometer>
+      <X>-100</X>
+      <Y>-100</Y>
+      <Z>-100</Z>
+    </Magnetometer>
+  </Sensor>
+  <Earthquake>
+    <Magnitude>5.0</Magnitude>
+    <Level>x</Level>
+  </Earthquake>
+  <Alarm>
+    <Wifi>
+      <Hostname>sensor-node-1</Hostname>
+      <Local_IP>192.168.1.100</Local_IP>
+      <Signal_Strength>-50</Signal_Strength>
+    </Wifi>
+  </Alarm>
+</Data>
