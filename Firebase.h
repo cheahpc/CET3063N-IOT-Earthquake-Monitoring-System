@@ -86,8 +86,24 @@ void initFirebase() {
 }
 
 // -------------------------------------------------
-// Custom Float
+// Custom Int Float
 // -------------------------------------------------
+void fb_SetInt(String dataPath,int value) {
+  // Verify Firebase connection
+  if (Firebase.ready()) {
+    // Store data to respective datapath
+    if (Firebase.RTDB.setInt(&fbdo, dataPath, value)) {
+#ifdef FIREBASE_VERBOSE
+      Serial.println();
+      Serial.print(value);
+      Serial.print(" - successfully saved to: " + fbdo.dataPath());
+      Serial.println(" (" + fbdo.dataType() + ")");
+#endif
+    } else {
+      Serial.println("FAILED: " + fbdo.errorReason());
+    };
+  }
+}
 void fb_SetFloat(String dataPath, float value) {
   // Verify Firebase connection
   if (Firebase.ready()) {
@@ -103,26 +119,6 @@ void fb_SetFloat(String dataPath, float value) {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
   }
-}
-
-float fb_GetFloat(String dataPath) {
-  // Verify Firebase connection
-  if (Firebase.ready()) {
-    // Store data to respective datapath
-    if (Firebase.RTDB.getFloat(&fbdo, dataPath)) {
-      if (fbdo.dataType() == "boolean") {
-#ifdef FIREBASE_VERBOSE
-        Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.floatData() + " (" + fbdo.dataType() + ")");
-#endif
-        return fbdo.floatData();
-      }
-    } else {
-      Serial.println("FAILED: " + fbdo.errorReason());
-    };
-  } else {
-    Serial.println("Error: Firebase not ready.");
-  }
-  return 0.0;
 }
 
 // -------------------------------------------------

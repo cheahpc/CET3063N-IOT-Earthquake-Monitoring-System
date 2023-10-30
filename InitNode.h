@@ -1,8 +1,8 @@
 // -------------------------------------------------
 // Node Option - Select which node to upload
 // -------------------------------------------------
-// #define SENSOR
-#define PLATFORM
+#define SENSOR
+// #define PLATFORM
 
 // -------------------------------------------------
 // Firebase Option
@@ -10,7 +10,7 @@
 // #define ANONYMOUS
 // #define FIREBASE_VERBOSE
 
-#define DELAY_TIME 10
+#define DELAY_TIME 50
 
 #include "Wifi.h"
 #include "Firebase.h"
@@ -72,6 +72,5 @@ void initNode() {
   // Add your web page to the server
   Serial.println("Web server started");
 #endif
-
 }
 #pragma endregion setup_init

@@ -295,7 +295,10 @@
                 .then((userCredential) => {
                     // Signed in 
                     alert("Logged In successful");
+                    // Remove login overlay
                     document.getElementById('loginform').remove();
+
+                    // Listen to RTDB and update value
 
                 })
                 .catch((error) => {
