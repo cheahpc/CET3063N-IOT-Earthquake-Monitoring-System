@@ -102,7 +102,7 @@
         </style>
     </head>
 
-    <body onload="getConnectionData()">
+    <body onload="getConnectionData() , signIn()">
         <h1>Earthquake Monitoring Dashboard</h1>
         <h2>Connection:<span class="ml3" id="date">mm/dd/yyyy</span><span class="ml3" id="time">00:00:00</span></h2>
 
@@ -188,6 +188,47 @@
         <button type="button" id="btnMuteAlarm" onclick="btnMute()">Mute Alarm</button>
     </body>
 
+    <script type="module">
+        // ---------------------------------------------------
+        // Firebase
+        // ---------------------------------------------------
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        import {
+            getDatabase,
+            ref,
+            set
+        } from 'https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js';
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTZj09mjxN2LfGO_O2gbCziAixP8GOl4M",
+            authDomain: "earthquake-6db21.firebaseapp.com",
+            databaseURL: "https://earthquake-6db21-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "earthquake-6db21",
+            storageBucket: "earthquake-6db21.appspot.com",
+            messagingSenderId: "1073825058009",
+            appId: "1:1073825058009:web:ae634796aa468b037442c8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getDatabase();
+
+        var email = "estupido404@gmail.com";
+            var password = "Stupido@404";
+
+
+    </script>
+
     <script type="text/javascript">
         setInterval(function () {
             updateData();
@@ -239,6 +280,8 @@
             };
             xhttp.open("GET", "connectionXML", true);
             xhttp.send();
+            // alert("Hello");
+            signIn();
         }
 
         function updateData() {
@@ -289,6 +332,61 @@
             xhttp.open("GET", "sensorXML", true);
             xhttp.send();
         }
+
+        function signIn() {
+            alert("Hello world")
+        };
+
+    </script>
+
+    <script type="module">
+
+        // Import the functions you need from the SDKs you need
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+
+
+
+
+
+        // createUserWithEmailAndPassword(auth, email, password)
+        //     .then((userCredential) => {
+        //         // Signed up 
+        //         const user = userCredential.user;
+        //         // ...
+        //     })
+        //     .catch((error) => {
+        //         const errorCode = error.code;
+        //         const errorMessage = error.message;
+        //         // ..
+
+        //     });
+
+        function signIn() {
+            alert("Hello ");
+            
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+                    // ...
+                    alert("Signed in");
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert("Sign in fail");
+                });
+        };
+
+
+        const starCountRef = ref(db, 'posts/' + postId + '/starCount');
+        onValue(starCountRef, (snapshot) => {
+            const data = snapshot.val();
+            updateStarCount(postElement, data);
+        });
+
     </script>
 
 </html>
