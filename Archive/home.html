@@ -147,33 +147,33 @@
             </div>
         </div>
 
-        <h1>Earthquake Monitoring Dashboard</h1>
+        <h1>Realtime Earthquake Monitoring Dashboard</h1>
         <h2>Connection:<span class="ml3" id="date">mm/dd/yyyy</span><span class="ml3" id="time">00:00:00</span></h2>
 
         <table class="connection-table">
             <thead>
                 <tr>
                     <th class="top left header_bottom">WIFI</th>
-                    <th class="header_bottom top">Sensor Node</th>
-                    <th class="header_bottom top right">Alarm Node</th>
+                    <th class="header_bottom top">Platform</th>
+                    <th class="header_bottom top right">Sensor 1</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="left">Node Hostname</td>
-                    <td id="sensorNodeHostname"></td>
-                    <td class="right" id="alarmNodeHostname"></td>
+                    <td class="left">Hostname</td>
+                    <td id="platformHostname"></td>
+                    <td class="right" id="sensor1Hostname"></td>
                 </tr>
                 <tr>
-                    <td class="left">Node Local IP</td>
-                    <td id="sensorNodeLocalIP"></td>
-                    <td class="right" id="alarmNodeLocalIP"></td>
+                    <td class="left">Local IP</td>
+                    <td id="platformLocalIP"></td>
+                    <td class="right" id="sensor1LocalIP"></td>
 
                 </tr>
                 <tr>
-                    <td class="left bottom">Node WiFi Signal Strength</td>
-                    <td class="bottom" id="sensorNodeSignalStrength"></td>
-                    <td class="right bottom" id="alarmNodeWiFiSignalStrength"></td>
+                    <td class="left bottom">Signal Strength</td>
+                    <td class="bottom" id="platformWiFiSignalStrength"></td>
+                    <td class="right bottom" id="sensor1SignalStrength"></td>
                 </tr>
             </tbody>
         </table>
@@ -215,21 +215,21 @@
             <thead>
                 <tr>
                     <th class="header_bottom top left">Earthquake</th>
-                    <th class="header_bottom top right">Value</th>
+                    <th class="header_bottom top right">Sensor 1</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="left">Magnitude</td>
-                    <td class="right" id="earthquakeMagnitude"></td>
+                    <td class="right" id="eMagnitude"></td>
                 </tr>
                 <tr>
                     <td class="left bottom">Level</td>
-                    <td class="right bottom" id="earthquakeLevel"></td>
+                    <td class="right bottom" id="eLevel"></td>
                 </tr>
             </tbody>
         </table>
-        <button type="button" id="btnMute">Mute Alarm</button>
+        <!-- <button type="button" id="btnMute">Mute Alarm</button> -->
     </body>
 
     <script type="module">
@@ -255,15 +255,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase();
         const auth = getAuth();
-        // var email = "estupido404@gmail.com";
-        // var password = "Stupido@404";
         var email = "";
         var password = "";
 
         // ---------------------------------------------------
         // Firebase End
         // ---------------------------------------------------
-
         setInterval(function () {
             // updateData();
             var date = new Date();
@@ -271,9 +268,9 @@
             var dateString = date.toLocaleDateString();
             document.getElementById("time").innerHTML = time;
             document.getElementById("date").innerHTML = dateString;
+            // Tell platform to blink
+            // SendSignal();
         }, 50);
-
-
 
         // -------------------------------------------------------------------------- Login Overlay
         function openOverlay() {
@@ -294,11 +291,46 @@
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     // Signed in 
-                    alert("Logged In successful");
+                    // alert("Logged In successful");
                     // Remove login overlay
                     document.getElementById('loginform').remove();
 
                     // Listen to RTDB and update value
+                    onValue(ref(db, 'Sensor/1'), (snapshot) => {
+                        const data = snapshot.val();
+                        // MPU9250
+                        document.getElementById('sensorAccelX').innerHTML = data.Accelerometer.X;
+                        document.getElementById('sensorAccelY').innerHTML = data.Accelerometer.Y;
+                        document.getElementById('sensorAccelZ').innerHTML = data.Accelerometer.Z;
+                        document.getElementById('sensorGyroX').innerHTML = data.Gyroscope.X;
+                        document.getElementById('sensorGyroY').innerHTML = data.Gyroscope.Y;
+                        document.getElementById('sensorGyroZ').innerHTML = data.Gyroscope.Z;
+                        document.getElementById('sensorMagX').innerHTML = data.Magnetometer.X;
+                        document.getElementById('sensorMagY').innerHTML = data.Magnetometer.Y;
+                        document.getElementById('sensorMagZ').innerHTML = data.Magnetometer.Z;
+                        document.getElementById('sensorTemp').innerHTML = data.Temperature;
+                    });
+                    onValue(ref(db, 'Earthquake'), (snapshot) => {
+                        // Earthquake
+                        document.getElementById('eMagnitude').innerHTML = snapshot.child("Sensor 1/Magnitude").val();
+                        document.getElementById('eLevel').innerHTML     = snapshot.child("Sensor 1/Level").val();
+                    });
+
+                    // Connection -- Set once
+                    get(child(ref(db), 'Connection')).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            document.getElementById('platformHostname').innerHTML           = snapshot.child("Platform/Hostname").val();
+                            document.getElementById('platformLocalIP').innerHTML            = snapshot.child("Platform/Local IP").val();
+                            document.getElementById('platformWiFiSignalStrength').innerHTML = snapshot.child("Platform/Signal Strength").val();
+                            document.getElementById('sensor1Hostname').innerHTML          = snapshot.child("Sensor 1/Hostname").val();
+                            document.getElementById('sensor1LocalIP').innerHTML           = snapshot.child("Sensor 1/Local IP").val();
+                            document.getElementById('sensor1SignalStrength').innerHTML    = snapshot.child("Sensor 1/Signal Strength").val();
+                        } else {
+                            console.log("No connection data available");
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                    });
 
                 })
                 .catch((error) => {
@@ -308,13 +340,28 @@
                 });
         }
         function Mute() {
+            // TODO: To implement something here
             // var xhttp = new XMLHttpRequest();
             // xhttp.open("PUT", "btnMute", false);
             // xhttp.send();
         }
 
+        function SendSignal() {
+            // TODO: send signal to platform to blink blink
+            var xhttp = new XMLHttpRequest();
+            // TODO Implement Magnitude checking
+            xhttp.open("PUT", "signal_0", false);
+            // xhttp.open("PUT", "signal_1", false);
+            // xhttp.open("PUT", "signal_2", false);
+            // xhttp.open("PUT", "signal_3", false);
+            // xhttp.open("PUT", "signal_4", false);
+            // xhttp.open("PUT", "signal_5", false);
+            xhttp.send();
+
+        }
+
         document.querySelector("#btnLogin").addEventListener('click', Login);
-        document.querySelector("#btnMute").addEventListener('click', Mute);
+        // document.querySelector("#btnMute").addEventListener('click', Mute);
     </script>
 
 

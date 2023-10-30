@@ -13,42 +13,11 @@
 // fb_GetEarthquakeMagnitude();
 //
 
-// -------------------------------------------------
-// Firebase
-// -------------------------------------------------
-#ifndef ANONYMOUS
-#define USER_EMAIL "estupido404@gmail.com"
-#define USER_PASSWORD "Stupido@404"
-#endif
-#define API_KEY "AIzaSyCTZj09mjxN2LfGO_O2gbCziAixP8GOl4M"
-#define DB_URL "https://earthquake-6db21-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig fbconfig;
-// -------------------------------------------------
-// Firebase Node String
-// -------------------------------------------------
-#define SENSOR_NODE_ACCEL_X_PATH "Sensor1/Accelerometer/X"
-#define SENSOR_NODE_ACCEL_Y_PATH "Sensor1/Accelerometer/Y"
-#define SENSOR_NODE_ACCEL_Z_PATH "Sensor1/Accelerometer/Z"
-#define SENSOR_NODE_GYRO_X_PATH "Sensor1/Gyro/X"
-#define SENSOR_NODE_GYRO_Y_PATH "Sensor1/Gyro/Y"
-#define SENSOR_NODE_GYRO_Z_PATH "Sensor1/Gyro/Z"
-#define SENSOR_NODE_MAG_X_PATH "Sensor1/Magnetometer/X"
-#define SENSOR_NODE_MAG_Y_PATH "Sensor1/Magnetometer/Y"
-#define SENSOR_NODE_MAG_Z_PATH "Sensor1/Magnetometer/Z"
-#define SENSOR_NODE_TEMP_PATH "Sensor1/Temperature/"
 
-#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor1/Hostname"
-#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor1/Local IP"
-#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Sensor1/Signal Strength"
-
-#define ALARM_NODE_WIFI_HOSTNAME_PATH "Platform/WiFi/Hostname"
-#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Platform/WiFi/Local IP"
-#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Platform/WiFi/Signal Strength"
-
-#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor1/Magnitude"
-#define EARTHQUAKE_LEVEL_PATH "Earthquake/Sensor1/Level"
 
 // Initialize Firebase
 void initFirebase() {
@@ -88,7 +57,7 @@ void initFirebase() {
 // -------------------------------------------------
 // Custom Int Float
 // -------------------------------------------------
-void fb_SetInt(String dataPath,int value) {
+void fb_SetInt(String dataPath, int value) {
   // Verify Firebase connection
   if (Firebase.ready()) {
     // Store data to respective datapath

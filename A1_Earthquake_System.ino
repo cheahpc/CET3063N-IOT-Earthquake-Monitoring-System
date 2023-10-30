@@ -46,6 +46,6 @@ void loop() {
 #endif
 
 #ifdef PLATFORM
-  Server.handleClient();
+  server.handleClient();
 #endif
 }

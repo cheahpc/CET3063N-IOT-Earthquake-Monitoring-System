@@ -8,23 +8,6 @@
 // imu_GetMag();
 // imu_GetTemp();
 
-// Define debug to print respective value
-// #define DEBUG_ACCEL  // Accelerator
-// #define DEBUG_GYRO // Gyroscope
-// #define DEBUG_MAGNETO  // Magnetometer
-// #define DEBUG_TEMP // Temperature
-
-// Define enable sensor
-#define ENABLE_ACCEL
-#define ENABLE_GYRO
-#define ENABLE_MAGNETO
-#define ENABLE_TEMP
-
-// -------------------------------------------------
-// Global value
-// -------------------------------------------------
-#define ROUND_VALUE 2
-#define INTERVAL_MS_PRINT 100
 
 
 struct {

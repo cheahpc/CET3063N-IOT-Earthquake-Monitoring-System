@@ -1,8 +1,4 @@
-// -------------------------------------------------
-// Formula option
-// -------------------------------------------------
-// #define FORMULA_A
-#define FORMULA_B
+
 
 // Define the threshold values for each earthquake level
 const float earthquakeThresholds[] = {
@@ -24,14 +20,14 @@ float e_GetRitcherMagnitude(float val1, float val2, float val3) {
   //  A0_______________________A1
   //    <----------d----------> the distance between A0 and A1
   const float A0 = 10.5;
-  const int d = 20;
+  const int d = 100;
   const float A1 = sqrt(pow(val1, 2) + pow(val2, 2) + pow(val3, 2));
-  #ifdef FORMULA_A
-  result = log10(A0) - log10(A1*d);
-  #endif 
-  #ifdef FORMULA_B
-  result = log10(A1/A0);
-  #endif
+#ifdef FORMULA_A
+  result = log10(A0) - log10(A1 * d);
+#endif
+#ifdef FORMULA_B
+  result = log10(A1 / A0);
+#endif
   return result;
 }
 // Get the earthquake level
