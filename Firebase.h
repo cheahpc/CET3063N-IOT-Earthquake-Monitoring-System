@@ -25,31 +25,30 @@
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig fbconfig;
-bool signupOK = false;
 // -------------------------------------------------
 // Firebase Node String
 // -------------------------------------------------
-#define SENSOR_NODE_ACCEL_X_PATH "Sensor Node/Accelerometer/X"
-#define SENSOR_NODE_ACCEL_Y_PATH "Sensor Node/Accelerometer/Y"
-#define SENSOR_NODE_ACCEL_Z_PATH "Sensor Node/Accelerometer/Z"
-#define SENSOR_NODE_GYRO_X_PATH "Sensor Node/Gyro/X"
-#define SENSOR_NODE_GYRO_Y_PATH "Sensor Node/Gyro/Y"
-#define SENSOR_NODE_GYRO_Z_PATH "Sensor Node/Gyro/Z"
-#define SENSOR_NODE_MAG_X_PATH "Sensor Node/Magnetometer/X"
-#define SENSOR_NODE_MAG_Y_PATH "Sensor Node/Magnetometer/Y"
-#define SENSOR_NODE_MAG_Z_PATH "Sensor Node/Magnetometer/Z"
-#define SENSOR_NODE_TEMP_PATH "Sensor Node/Temp/Celcius"
+#define SENSOR_NODE_ACCEL_X_PATH "Sensor1/Accelerometer/X"
+#define SENSOR_NODE_ACCEL_Y_PATH "Sensor1/Accelerometer/Y"
+#define SENSOR_NODE_ACCEL_Z_PATH "Sensor1/Accelerometer/Z"
+#define SENSOR_NODE_GYRO_X_PATH "Sensor1/Gyro/X"
+#define SENSOR_NODE_GYRO_Y_PATH "Sensor1/Gyro/Y"
+#define SENSOR_NODE_GYRO_Z_PATH "Sensor1/Gyro/Z"
+#define SENSOR_NODE_MAG_X_PATH "Sensor1/Magnetometer/X"
+#define SENSOR_NODE_MAG_Y_PATH "Sensor1/Magnetometer/Y"
+#define SENSOR_NODE_MAG_Z_PATH "Sensor1/Magnetometer/Z"
+#define SENSOR_NODE_TEMP_PATH "Sensor1/Temperature/"
 
-#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor Node/WiFi/Hostname"
-#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor Node/WiFi/Local IP"
-#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Sensor Node/WiFi/Signal Strength"
+#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor1/Hostname"
+#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor1/Local IP"
+#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Sensor1/Signal Strength"
 
-#define ALARM_NODE_WIFI_HOSTNAME_PATH "Alarm Node/WiFi/Hostname"
-#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Alarm Node/WiFi/Local IP"
-#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Alarm Node/WiFi/Signal Strength"
+#define ALARM_NODE_WIFI_HOSTNAME_PATH "Platform/WiFi/Hostname"
+#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Platform/WiFi/Local IP"
+#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Platform/WiFi/Signal Strength"
 
-#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Magnitude"
-#define EARTHQUAKE_LEVEL_PATH "Earthquake/Level"
+#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor1/Magnitude"
+#define EARTHQUAKE_LEVEL_PATH "Earthquake/Sensor1/Level"
 
 // Initialize Firebase
 void initFirebase() {
@@ -65,8 +64,7 @@ void initFirebase() {
 // Anonymous sign-up (optional)
 #ifdef ANONYMOUS
   if (Firebase.signUp(&fbconfig, &auth, "", "")) {
-    Serial.print("signUP OK");
-    signupOK = true;
+    Serial.print("New user signed up!");
   } else {
     Serial.printf("%s\n", fbconfig.signer.signupError.message.c_str());
   }

@@ -1,6 +1,6 @@
 // Initialize all necessary library and values
 #include <ESP8266WiFi.h>
-#ifdef ALARM
+#ifdef PLATFORM
 // #include "WiFiClient.h"
 // #include "WebServer.h"
 #include <ESP8266WebServer.h>
@@ -12,13 +12,11 @@
 #define SSID "PasswordIsPassword"
 #define PASSWORD "password"
 #ifdef SENSOR
-#define HOSTNAME "SENSOR_NODE"
+#define HOSTNAME "Sensor1"
 #endif
-#ifdef ALARM
-#define HOSTNAME "ALARM_NODE"
+#ifdef PLATFORM
+#define HOSTNAME "Platform"
 
-char XML[2048];
-char buf[32];
 // Create a web server object
 ESP8266WebServer server(80);  //Server on port 80
 #endif
