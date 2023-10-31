@@ -179,7 +179,7 @@ const char main_page[] PROGMEM = R"=====(
             </tbody>
         </table>
 
-        <table class="sensor-table">
+        <!-- <table class="sensor-table">
             <thead>
                 <tr>
                     <th class="header_bottom left top">Sensor</th>
@@ -210,7 +210,7 @@ const char main_page[] PROGMEM = R"=====(
                     <td class="bottom" id="sensorMagZ"></td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
 
         <table class="earthquake-table">
             <thead>
@@ -290,25 +290,25 @@ const char main_page[] PROGMEM = R"=====(
                     document.getElementById('loginform').remove();
 
                     // Listen to RTDB and update value
-                    onValue(ref(db, 'Sensor/1'), (snapshot) => {
-                        const data = snapshot.val();
-                        // MPU9250
-                        document.getElementById('sensorAccelX').innerHTML = data.Accelerometer.X;
-                        document.getElementById('sensorAccelY').innerHTML = data.Accelerometer.Y;
-                        document.getElementById('sensorAccelZ').innerHTML = data.Accelerometer.Z;
-                        document.getElementById('sensorGyroX').innerHTML = data.Gyroscope.X;
-                        document.getElementById('sensorGyroY').innerHTML = data.Gyroscope.Y;
-                        document.getElementById('sensorGyroZ').innerHTML = data.Gyroscope.Z;
-                        document.getElementById('sensorMagX').innerHTML = data.Magnetometer.X;
-                        document.getElementById('sensorMagY').innerHTML = data.Magnetometer.Y;
-                        document.getElementById('sensorMagZ').innerHTML = data.Magnetometer.Z;
-                        document.getElementById('sensorTemp').innerHTML = data.Temperature;
-                    });
+                    // onValue(ref(db, 'Sensor/1'), (snapshot) => {
+                    //     const data = snapshot.val();
+                    //     // MPU9250
+                    //     document.getElementById('sensorAccelX').innerHTML = data.Accelerometer.X;
+                    //     document.getElementById('sensorAccelY').innerHTML = data.Accelerometer.Y;
+                    //     document.getElementById('sensorAccelZ').innerHTML = data.Accelerometer.Z;
+                    //     document.getElementById('sensorGyroX').innerHTML = data.Gyroscope.X;
+                    //     document.getElementById('sensorGyroY').innerHTML = data.Gyroscope.Y;
+                    //     document.getElementById('sensorGyroZ').innerHTML = data.Gyroscope.Z;
+                    //     document.getElementById('sensorMagX').innerHTML = data.Magnetometer.X;
+                    //     document.getElementById('sensorMagY').innerHTML = data.Magnetometer.Y;
+                    //     document.getElementById('sensorMagZ').innerHTML = data.Magnetometer.Z;
+                    //     document.getElementById('sensorTemp').innerHTML = data.Temperature;
+                    // });
 
                     onValue(ref(db, 'Earthquake'), (snapshot) => {
                         // Earthquake
                         // Open connection
-                        var xhttp = new XMLHttpRequest();
+                        // var xhttp = new XMLHttpRequest();
 
                         document.getElementById('eMagnitude').innerHTML = snapshot.child("Sensor 1/Magnitude").val();
                         document.getElementById('eLevel').innerHTML = snapshot.child("Sensor 1/Level").val();
@@ -317,50 +317,50 @@ const char main_page[] PROGMEM = R"=====(
                             case 0:
                                 document.getElementById('eClass').innerHTML = "No earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#00388c"
-                                xhttp.open("PUT", "signal_0", false);
+                                // xhttp.open("PUT", "signal_0", false);
                                 break;
                             case 1:
                                 document.getElementById('eClass').innerHTML = "Minor earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#008000"
-                                xhttp.open("PUT", "signal_1", false);
+                                // xhttp.open("PUT", "signal_1", false);
                                 break;
                             case 2:
                                 document.getElementById('eClass').innerHTML = "Regular earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#bdb300"
-                                xhttp.open("PUT", "signal_2", false);
+                                // xhttp.open("PUT", "signal_2", false);
                                 break;
                             case 3:
                                 document.getElementById('eClass').innerHTML = "Serious earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#d47800"
-                                xhttp.open("PUT", "signal_3", false);
+                                // xhttp.open("PUT", "signal_3", false);
                                 break;
                             case 4:
                                 document.getElementById('eClass').innerHTML = "Severe earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#ff6e6e"
-                                xhttp.open("PUT", "signal_4", false);
+                                // xhttp.open("PUT", "signal_4", false);
                                 break;
                             case 5:
                                 document.getElementById('eClass').innerHTML = "Catastrophic earthquake";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#E00"
-                                xhttp.open("PUT", "signal_5", false);
+                                // xhttp.open("PUT", "signal_5", false);
                                 break;
                             case 6:
                                 document.getElementById('eClass').innerHTML = "Find new earth";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#A00"
-                                xhttp.open("PUT", "signal_6", false);
+                                // xhttp.open("PUT", "signal_6", false);
                                 break;
                             case 7:
                                 document.getElementById('eClass').innerHTML = "....";
                                 document.querySelector(".earthquake-table").style.backgroundColor = "#222"
-                                xhttp.open("PUT", "signal_7", false);
+                                // xhttp.open("PUT", "signal_7", false);
                                 break;
                             default:
                                 document.getElementById('eClass').innerHTML = "Find new earth";
-                                xhttp.open("PUT", "signal_8", false);
+                                // xhttp.open("PUT", "signal_8", false);
                                 break;
                         }
                         // Send message to nodeMCU
-                        xhttp.send();
+                        // xhttp.send();
                     });
 
                     // Connection -- Set once

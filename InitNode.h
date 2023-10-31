@@ -1,8 +1,8 @@
 // -------------------------------------------------
 // Node Option - Select which node to upload
 // -------------------------------------------------
-#define SENSOR
-// #define PLATFORM
+// #define SENSOR
+#define PLATFORM
 
 // -------------------------------------------------
 // Wifi Option
@@ -150,14 +150,14 @@ void initNode() {
 #ifdef PLATFORM
   // ------------------------------------------------ Server Init
   server.on("/", SendWebsite);
-  server.on("/signal_0", handleSignal_0);
-  server.on("/signal_1", handleSignal_1);
-  server.on("/signal_2", handleSignal_2);
-  server.on("/signal_3", handleSignal_3);
-  server.on("/signal_4", handleSignal_4);
-  server.on("/signal_5", handleSignal_5);
-  server.on("/signal_6", handleSignal_6);
-  server.on("/signal_7", handleSignal_7);
+  // server.on("/signal_0", handleSignal_0);
+  // server.on("/signal_1", handleSignal_1);
+  // server.on("/signal_2", handleSignal_2);
+  // server.on("/signal_3", handleSignal_3);
+  // server.on("/signal_4", handleSignal_4);
+  // server.on("/signal_5", handleSignal_5);
+  // server.on("/signal_6", handleSignal_6);
+  // server.on("/signal_7", handleSignal_7);
 
   // Start Server
   server.begin();
@@ -208,15 +208,15 @@ void sensorRoutine() {
 
   if ((millis() - prevT_RTDB) >= tTres_RTDB) {
     // Send Sensor data
-    getSensorJSON();
-    updateNodeAsync();
+    // getSensorJSON();
+    // updateNodeAsync();
   }
 }
 #endif
 
 #ifdef PLATFORM
 void platformRoutine() {
-  loopSignal();
+  // loopSignal();
   server.handleClient();
 }
 #endif

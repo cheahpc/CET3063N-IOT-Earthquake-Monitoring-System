@@ -52,6 +52,7 @@ void loopSignal() {
     if (millis() - prevT_blink > blinkInterval) {
       signal != signal;                  // Toggle signal
       digitalWrite(SIGNAL_PIN, signal);  // Write to signal pin
+      prevT_blink = millis();
     }
   }
 }
