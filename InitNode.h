@@ -5,7 +5,7 @@
 // #define PLATFORM
 
 // -------------------------------------------------
-// Wifi
+// Wifi Option
 // -------------------------------------------------
 #define WSSID "PasswordIsPassword"
 #define WPASSWORD "password"
@@ -17,80 +17,6 @@
 #define HOSTNAME "Platform"
 #endif
 
-// -------------------------------------------------
-// MPU9250 Option
-// -------------------------------------------------
-// Define debug to print respective value
-// #define DEBUG_ACCEL  // Accelerator
-// #define DEBUG_GYRO // Gyroscope
-// #define DEBUG_MAGNETO  // Magnetometer
-// #define DEBUG_TEMP // Temperature
-
-// Define enable sensor
-#define ENABLE_ACCEL
-#define ENABLE_GYRO
-#define ENABLE_MAGNETO
-#define ENABLE_TEMP
-
-// -------------------------------------------------
-// MPU9250 Values
-// -------------------------------------------------
-#define ROUND_VALUE 2
-#define INTERVAL_MS_PRINT 100
-
-// -------------------------------------------------
-// Firebase Option
-// -------------------------------------------------
-// #define ANONYMOUS
-// #define FIREBASE_VERBOSE
-#define DELAY_TIME 100
-
-// #define DEBUG_JSON
-#define FB_SET_METHOD_1  // JSON set
-// #define FB_SET_METHOD_2  // Individual set
-
-// -------------------------------------------------
-// Firebase Value
-// -------------------------------------------------
-#ifndef ANONYMOUS
-#define USER_EMAIL "estupido404@gmail.com"
-#define USER_PASSWORD "Stupido@404"
-#endif
-#define API_KEY "AIzaSyCTZj09mjxN2LfGO_O2gbCziAixP8GOl4M"
-#define DB_URL "https://earthquake-6db21-default-rtdb.asia-southeast1.firebasedatabase.app/"
-
-#define SENSOR_NODE_ACCEL_X_PATH "Sensor/1/Accelerometer/X"
-#define SENSOR_NODE_ACCEL_Y_PATH "Sensor/1/Accelerometer/Y"
-#define SENSOR_NODE_ACCEL_Z_PATH "Sensor/1/Accelerometer/Z"
-#define SENSOR_NODE_GYRO_X_PATH "Sensor/1/Gyroscope/X"
-#define SENSOR_NODE_GYRO_Y_PATH "Sensor/1/Gyroscope/Y"
-#define SENSOR_NODE_GYRO_Z_PATH "Sensor/1/Gyroscope/Z"
-#define SENSOR_NODE_MAG_X_PATH "Sensor/1/Magnetometer/X"
-#define SENSOR_NODE_MAG_Y_PATH "Sensor/1/Magnetometer/Y"
-#define SENSOR_NODE_MAG_Z_PATH "Sensor/1/Magnetometer/Z"
-#define SENSOR_NODE_TEMP_PATH "Sensor/1/Temperature/"
-
-#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Connection/Sensor 1/Hostname"
-#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Connection/Sensor 1/Local IP"
-#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Sensor 1/Signal Strength"
-
-#define ALARM_NODE_WIFI_HOSTNAME_PATH "Connection/Platform/Hostname"
-#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Connection/Platform/Local IP"
-#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Platform/Signal Strength"
-
-#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor 1/Magnitude"
-#define EARTHQUAKE_AMPLITUDE_PATH "Earthquake/Sensor 1/Amplitude"
-
-// -------------------------------------------------
-// Eartquake option
-// -------------------------------------------------
-#define FORMULA_A
-// #define FORMULA_B
-
-// -------------------------------------------------
-// Signal Value
-// -------------------------------------------------
-#define signalPin D0
 
 // -------------------------------------------------
 // Include Library
@@ -131,9 +57,7 @@ void getSensorJSON() {
 #ifdef ENABLE_TEMP
   fbjson.set(SENSOR_NODE_TEMP_PATH, imu_GetTemp());
 #endif
-  eSetVal(imu_GetAccel(1), imu_GetAccel(2), imu_GetAccel(3));
-  fbjson.set(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude());
-  fbjson.set(EARTHQUAKE_AMPLITUDE_PATH, eGetAmplitude());
+  
 #ifdef DEBUG_JSON
   fbjson.toString(Serial, true);
   Serial.println();
@@ -223,7 +147,7 @@ void initNode() {
   initFirebase();
   // Send Connection detail
   getWiFiJSON();  // Get wifi connection information into json
-  updateRTDB();   // Send wifi connection information to rtdb
+  updateNode();   // Send wifi connection information to rtdb
 
 #ifdef PLATFORM
   // ------------------------------------------------ Server Init

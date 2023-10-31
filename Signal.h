@@ -1,3 +1,8 @@
+// -------------------------------------------------
+// Signal Value
+// -------------------------------------------------
+
+#define signalPin D0
 void initSignal() {
   pinMode(signalPin, OUTPUT);
 }

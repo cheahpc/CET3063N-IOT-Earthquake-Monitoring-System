@@ -8,7 +8,27 @@
 // imu_GetMag();
 // imu_GetTemp();
 
+// -------------------------------------------------
+// MPU9250 Option
+// -------------------------------------------------
+// Define debug to print respective value
+// #define DEBUG_ACCEL  // Accelerator
+// #define DEBUG_GYRO // Gyroscope
+// #define DEBUG_MAGNETO  // Magnetometer
+// #define DEBUG_TEMP // Temperature
 
+// Define enable sensor
+#define ENABLE_ACCEL
+#define ENABLE_GYRO
+#define ENABLE_MAGNETO
+#define ENABLE_TEMP
+
+
+// -------------------------------------------------
+// MPU9250 Values
+// -------------------------------------------------
+#define ROUND_VALUE 2
+#define INTERVAL_MS_PRINT 100
 
 struct {
   struct {
@@ -38,10 +58,14 @@ bool isMagnetometerReady() {
 // -------------------------------------------------
 #pragma region Accel
 #ifdef ENABLE_ACCEL
-#define ACC_FULL_SCALE_2G 0x00
-#define ACC_FULL_SCALE_4G 0x08
-#define ACC_FULL_SCALE_8G 0x10
-#define ACC_FULL_SCALE_16G 0x18
+
+// Full Scale Range 2G =  0x00 ; Sensitivity Scale Factor 16384
+// Full Scale Range 4G =  0x08 ; Sensitivity Scale Factor 8192
+// Full Scale Range 8G =  0x10 ; Sensitivity Scale Factor 4096
+// Full Scale Range 16G =  0x18 ; Sensitivity Scale Factor 2048
+
+#define ACC_FULL_SCALE_RANGE 0x18 // 2G
+#define ACC_SENSITIVITY_SCALE_FACTOR 2048
 
 struct accelerometer_raw {
   int16_t x, y, z;
@@ -62,9 +86,9 @@ void readRawAccel() {
 
 void normalize(accelerometer_raw accelerometer) {
   // Sensitivity Scale Factor (MPU datasheet page 9)
-  normalized.accelerometer.x = accelerometer.x * 9.80665 / 16384;
-  normalized.accelerometer.y = accelerometer.y * 9.80665 / 16384;
-  normalized.accelerometer.z = accelerometer.z * 9.80665 / 16384;
+  normalized.accelerometer.x = accelerometer.x * 9.80665 / ACC_SENSITIVITY_SCALE_FACTOR;
+  normalized.accelerometer.y = accelerometer.y * 9.80665 / ACC_SENSITIVITY_SCALE_FACTOR;
+  normalized.accelerometer.z = accelerometer.z * 9.80665 / ACC_SENSITIVITY_SCALE_FACTOR;
 }
 
 float imu_GetAccel(int index = 0) {
@@ -186,7 +210,7 @@ struct magnetometer_raw {
 
 void initMagnetometer() {
   uint8_t buff[3];
-
+  // [67-72] Gyroscope
   I2CwriteByte(0x0C, 0x0A, 0x1F);  // Set 16-bits output & fuse ROM access mode
 
   delay(1000);
@@ -309,7 +333,7 @@ void initMPU9250() {
   Wire.begin();
 // ------------------------------------------------ MPU9250 Init
 #ifdef ENABLE_ACCEL
-  I2CwriteByte(0x68, 28, ACC_FULL_SCALE_2G);  // Configure accelerometer range
+  I2CwriteByte(0x68, 28, ACC_FULL_SCALE_RANGE);  // Configure accelerometer range
 #endif
 
 #ifdef ENABLE_GYRO

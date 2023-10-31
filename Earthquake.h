@@ -1,4 +1,11 @@
-
+// -------------------------------------------------
+// Eartquake option
+// -------------------------------------------------
+// #define FORMULA_A
+#define FORMULA_B
+#define Z_AXIS_CONSTANT 9.2
+#define D 10000  // 10km
+#define A0 9.2
 
 // Define the threshold values for each earthquake level
 const float earthquakeThresholds[] = {
@@ -8,35 +15,35 @@ const float earthquakeThresholds[] = {
   25.0,  // Strong earthquake
   30.0,  // Severe earthquake
 };
-float amplitude, magnitude, x, y, z;
-
-void eSetVal(float val1, float val2, float val3) {
-  x = val1;
-  y = val2;
-  z = val3;
-
+float amplitude, magnitude;
+// Getter
+float eGetMagnitude(float maxAmplitude) {
   // Ritcher formula A = log(A0) - log(A1 * d)
   // Ritcher formula B = log(A1/A0)
-  // A0 = constant ~ 10.5 Idle magnitude
-  // A1 = sensor magnitude
-  // d  = hardcoded constant 20m for example
+  // A0 = reference constant
+  // A1 = sensor amplitude
+  // d  = constant
   //  A0_______________________A1
   //    <----------d----------> the distance between A0 and A1
-  const float A0 = 10.5;
-  const int d = 100;
-  const float A1 = sqrt(pow(val1, 2) + pow(val2, 2) + pow(val3, 2));
-  amplitude = A1;
+
 #ifdef FORMULA_A
-  magnitude = log10(A0) - log10(A1 * d);
+  magnitude = log10(A0) - log10(maxAmplitude * D); 
+  // magnitude = log10(maxAmplitude) - log10(A0 * D);
 #endif
 #ifdef FORMULA_B
-  magnitude = log10(A1 / A0);
+  magnitude = log10(maxAmplitude / A0);
+  magnitude = magnitude*100; // Scale up for easier classification
 #endif
-}
-// Getter
-float eGetMagnitude() {
+
   return magnitude;
 }
-float eGetAmplitude() {
+
+float eGetAmplitude(float val = 0.0, float constant = Z_AXIS_CONSTANT) {
+  // If parameter is passed in, calculate new amplitude
+  if (val != 0.0) {
+    amplitude = abs(val);
+    amplitude = (amplitude > constant) ? amplitude : constant + ( constant- amplitude);
+  }
+  // Otherwise, get the previous amplitude
   return amplitude;
 }
