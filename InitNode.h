@@ -105,17 +105,16 @@ void setSensorData() {
 #endif
 #endif
 
-void getWiFiJSON() {
-  fbjson.clear();
+void sendWiFiInfo() {
 #ifdef SENSOR
-  fbjson.set(SENSOR_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
-  fbjson.set(SENSOR_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
-  fbjson.set(SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
+  fb_SetString(SENSOR_NODE_WIFI_HOSTNAME_PATH,wifi_GetHostname());
+  fb_SetString(SENSOR_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
+  fb_SetString(SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
 #endif
 #ifdef PLATFORM
-  fbjson.set(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
-  fbjson.set(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
-  fbjson.set(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
+  fb_SetString(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
+  fb_SetString(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
+  fb_SetString(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
 #endif
 }
 // -------------------------------------------------
@@ -146,8 +145,7 @@ void initNode() {
   // ------------------------------------------------ Firebase Init
   initFirebase();
   // Send Connection detail
-  getWiFiJSON();  // Get wifi connection information into json
-  updateNode();   // Send wifi connection information to rtdb
+  sendWiFiInfo();  // Set wifi connection information into json
 
 #ifdef PLATFORM
   // ------------------------------------------------ Server Init

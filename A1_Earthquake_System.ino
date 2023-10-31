@@ -1,6 +1,5 @@
 #include "InitNode.h"
 
-
 void setup() {
   // Start Everything
   initNode();
