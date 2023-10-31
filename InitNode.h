@@ -176,12 +176,12 @@ void initNode() {
 // -------------------------------------------------
 // Routine Program
 // -------------------------------------------------
-#ifndef SESNOR
+#ifdef SENSOR
 unsigned long prevT_Amplitude = 0;
 unsigned long prevT_Magnitude = 0;
 unsigned long prevT_RTDB = 0;
 unsigned long tTres_Amplitude_SampleRate = 5;
-unsigned long tTres_Magnitude_SampleRate = 250;
+unsigned long tTres_Magnitude_SampleRate = 500;
 unsigned long tTres_RTDB = 500;
 float currentAmplitude = 0;
 float maxAmplitude = 0;
