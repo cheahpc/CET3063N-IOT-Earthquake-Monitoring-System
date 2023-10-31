@@ -64,7 +64,7 @@ bool isMagnetometerReady() {
 // Full Scale Range 8G =  0x10 ; Sensitivity Scale Factor 4096
 // Full Scale Range 16G =  0x18 ; Sensitivity Scale Factor 2048
 
-#define ACC_FULL_SCALE_RANGE 0x18 // 2G
+#define ACC_FULL_SCALE_RANGE 0x18  // 2G
 #define ACC_SENSITIVITY_SCALE_FACTOR 2048
 
 struct accelerometer_raw {
@@ -264,7 +264,7 @@ float imu_GetMag(int index = 0) {
       return normalized.magnetometer.z;
       break;
     default:
-#ifdef DEBUG_GYRO
+#ifdef DEBUG_MAGNETO
       Serial.print("Mag:\t");
       Serial.print("X:");
       Serial.print(normalized.magnetometer.x, ROUND_VALUE);

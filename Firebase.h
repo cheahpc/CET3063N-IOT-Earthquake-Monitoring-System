@@ -10,7 +10,7 @@
 #define DELAY_TIME 250
 
 // #define DEBUG_JSON
-// #define FB_SET_METHOD_1  // JSON set
+#define FB_SET_METHOD_1  // JSON set
 // #define FB_SET_METHOD_2  // Individual set
 
 // -------------------------------------------------
@@ -43,7 +43,7 @@
 #define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Platform/Signal Strength"
 
 #define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor 1/Magnitude"
-#define EARTHQUAKE_AMPLITUDE_PATH "Earthquake/Sensor 1/Amplitude"
+#define EARTHQUAKE_LEVEL_PATH "Earthquake/Sensor 1/Level"
 
 // -------------------------------------------------
 // Usage - Function
@@ -95,9 +95,9 @@ void initFirebase() {
 void updateNode() {
   if (Firebase.ready()) {
     if (Firebase.RTDB.updateNode(&fbdo, "/", &fbjson)) {
-      #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
       Serial.println("JSON Sent to RTDB: ");
-      #endif
+#endif
     } else {
       Serial.println(fbdo.errorReason());
     }
@@ -106,12 +106,12 @@ void updateNode() {
   }
 }
 
-void updateNodeAsync(){
+void updateNodeAsync() {
   if (Firebase.ready()) {
     if (Firebase.RTDB.updateNodeAsync(&fbdo, "/", &fbjson)) {
-      #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
       Serial.println("JSON Sent to RTDB: ");
-      #endif
+#endif
     } else {
       Serial.println(fbdo.errorReason());
     }

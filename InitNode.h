@@ -57,7 +57,7 @@ void getSensorJSON() {
 #ifdef ENABLE_TEMP
   fbjson.set(SENSOR_NODE_TEMP_PATH, imu_GetTemp());
 #endif
-  
+
 #ifdef DEBUG_JSON
   fbjson.toString(Serial, true);
   Serial.println();
@@ -158,6 +158,8 @@ void initNode() {
   server.on("/signal_3", handleSignal_3);
   server.on("/signal_4", handleSignal_4);
   server.on("/signal_5", handleSignal_5);
+  server.on("/signal_6", handleSignal_6);
+  server.on("/signal_7", handleSignal_7);
 
   // Start Server
   server.begin();
@@ -170,3 +172,53 @@ void initNode() {
 // -------------------------------------------------
 // Init Node END
 // -------------------------------------------------
+
+// -------------------------------------------------
+// Routine Program
+// -------------------------------------------------
+#ifndef SESNOR
+unsigned long prevT_Amplitude = 0;
+unsigned long prevT_Magnitude = 0;
+unsigned long prevT_RTDB = 0;
+unsigned long tTres_Amplitude_SampleRate = 5;
+unsigned long tTres_Magnitude_SampleRate = 250;
+unsigned long tTres_RTDB = 500;
+float currentAmplitude = 0;
+float maxAmplitude = 0;
+
+void sensorRoutine() {
+  // Sample amplitude change
+  if ((millis() - prevT_Amplitude) >= tTres_Amplitude_SampleRate) {
+    // Sample amplitude
+    currentAmplitude = eGetAmplitude(imu_GetAccel(3));
+    // Set new maximum amplitude
+    maxAmplitude = max(maxAmplitude, currentAmplitude);
+
+    prevT_Amplitude = millis();
+  }
+
+  // Set magnitude base on max amplitude
+  if ((millis() - prevT_Magnitude) >= tTres_Magnitude_SampleRate) {
+    // Update RTDB with new magnitude
+    fb_SetFloat(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude(maxAmplitude));
+    fb_SetInt(EARTHQUAKE_LEVEL_PATH, eGetLevel());
+
+    // Reset maximum amplitude
+    maxAmplitude = 0;
+    prevT_Magnitude = millis();
+  }
+
+  if ((millis() - prevT_RTDB) >= tTres_RTDB) {
+    // Send Sensor data
+    getSensorJSON();
+    updateNodeAsync();
+  }
+}
+#endif
+
+#ifdef PLATFORM
+void platformRoutine() {
+  loopSignal();
+  server.handleClient();
+}
+#endif

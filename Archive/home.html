@@ -118,12 +118,12 @@
             .earthquake-table {
                 margin-top: 20px;
                 color: #fff;
-                background-color: #FFAF42;
+                background-color: #00388c;
             }
 
             button {
                 color: #ffffff;
-                background-color: #FFAF42;
+                background-color: #008000;
                 border-radius: 20px;
                 border: none;
                 box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
@@ -224,8 +224,13 @@
                     <td class="right" id="eMagnitude"></td>
                 </tr>
                 <tr>
-                    <td class="left bottom">Amplitude</td>
-                    <td class="right bottom" id="eAmplitude"></td>
+                    <td class="left bottom">Level</td>
+                    <td class="right bottom" id="eLevel"></td>
+
+                </tr>
+                <tr>
+                    <td class="left bottom">Classification</td>
+                    <td class="right bottom" id="eClass"></td>
                 </tr>
             </tbody>
         </table>
@@ -268,19 +273,7 @@
             var dateString = date.toLocaleDateString();
             document.getElementById("time").innerHTML = time;
             document.getElementById("date").innerHTML = dateString;
-            // Tell platform to blink
-            // SendSignal();
         }, 50);
-
-        // -------------------------------------------------------------------------- Login Overlay
-        function openOverlay() {
-            document.querySelector('.overlay').hidden = false;
-        }
-
-        // Function to close the overlay
-        function closeOverlay() {
-            document.querySelector('.overlay').hidden = true;
-        }
 
         // ---------------------------------------------------
         // Btn
@@ -310,21 +303,74 @@
                         document.getElementById('sensorMagZ').innerHTML = data.Magnetometer.Z;
                         document.getElementById('sensorTemp').innerHTML = data.Temperature;
                     });
+
                     onValue(ref(db, 'Earthquake'), (snapshot) => {
                         // Earthquake
+                        // Open connection
+                        var xhttp = new XMLHttpRequest();
+
                         document.getElementById('eMagnitude').innerHTML = snapshot.child("Sensor 1/Magnitude").val();
-                        document.getElementById('eAmplitude').innerHTML     = snapshot.child("Sensor 1/Level").val();
+                        document.getElementById('eLevel').innerHTML = snapshot.child("Sensor 1/Level").val();
+
+                        switch (snapshot.child("Sensor 1/Level").val()) {
+                            case 0:
+                                document.getElementById('eClass').innerHTML = "No earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#00388c"
+                                xhttp.open("PUT", "signal_0", false);
+                                break;
+                            case 1:
+                                document.getElementById('eClass').innerHTML = "Minor earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#008000"
+                                xhttp.open("PUT", "signal_1", false);
+                                break;
+                            case 2:
+                                document.getElementById('eClass').innerHTML = "Regular earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#bdb300"
+                                xhttp.open("PUT", "signal_2", false);
+                                break;
+                            case 3:
+                                document.getElementById('eClass').innerHTML = "Serious earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#d47800"
+                                xhttp.open("PUT", "signal_3", false);
+                                break;
+                            case 4:
+                                document.getElementById('eClass').innerHTML = "Severe earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#ff6e6e"
+                                xhttp.open("PUT", "signal_4", false);
+                                break;
+                            case 5:
+                                document.getElementById('eClass').innerHTML = "Catastrophic earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#E00"
+                                xhttp.open("PUT", "signal_5", false);
+                                break;
+                            case 6:
+                                document.getElementById('eClass').innerHTML = "Find new earth";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#A00"
+                                xhttp.open("PUT", "signal_6", false);
+                                break;
+                            case 7:
+                                document.getElementById('eClass').innerHTML = "....";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#222"
+                                xhttp.open("PUT", "signal_7", false);
+                                break;
+                            default:
+                                document.getElementById('eClass').innerHTML = "Find new earth";
+                                xhttp.open("PUT", "signal_8", false);
+                                break;
+                        }
+                        // Send message to nodeMCU
+                        xhttp.send();
                     });
 
                     // Connection -- Set once
                     get(child(ref(db), 'Connection')).then((snapshot) => {
                         if (snapshot.exists()) {
-                            document.getElementById('platformHostname').innerHTML           = snapshot.child("Platform/Hostname").val();
-                            document.getElementById('platformLocalIP').innerHTML            = snapshot.child("Platform/Local IP").val();
+                            document.getElementById('platformHostname').innerHTML = snapshot.child("Platform/Hostname").val();
+                            document.getElementById('platformLocalIP').innerHTML = snapshot.child("Platform/Local IP").val();
                             document.getElementById('platformWiFiSignalStrength').innerHTML = snapshot.child("Platform/Signal Strength").val();
-                            document.getElementById('sensor1Hostname').innerHTML          = snapshot.child("Sensor 1/Hostname").val();
-                            document.getElementById('sensor1LocalIP').innerHTML           = snapshot.child("Sensor 1/Local IP").val();
-                            document.getElementById('sensor1SignalStrength').innerHTML    = snapshot.child("Sensor 1/Signal Strength").val();
+                            document.getElementById('sensor1Hostname').innerHTML = snapshot.child("Sensor 1/Hostname").val();
+                            document.getElementById('sensor1LocalIP').innerHTML = snapshot.child("Sensor 1/Local IP").val();
+                            document.getElementById('sensor1SignalStrength').innerHTML = snapshot.child("Sensor 1/Signal Strength").val();
                         } else {
                             console.log("No connection data available");
                         }
@@ -344,20 +390,6 @@
             // var xhttp = new XMLHttpRequest();
             // xhttp.open("PUT", "btnMute", false);
             // xhttp.send();
-        }
-
-        function SendSignal() {
-            // TODO: send signal to platform to blink blink
-            var xhttp = new XMLHttpRequest();
-            // TODO Implement Magnitude checking
-            xhttp.open("PUT", "signal_0", false);
-            // xhttp.open("PUT", "signal_1", false);
-            // xhttp.open("PUT", "signal_2", false);
-            // xhttp.open("PUT", "signal_3", false);
-            // xhttp.open("PUT", "signal_4", false);
-            // xhttp.open("PUT", "signal_5", false);
-            xhttp.send();
-
         }
 
         document.querySelector("#btnLogin").addEventListener('click', Login);

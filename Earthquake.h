@@ -10,10 +10,14 @@
 // Define the threshold values for each earthquake level
 const float earthquakeThresholds[] = {
   10.0,  // No earthquake
-  15.0,  // Minor earthquake
-  20.0,  // Moderate earthquake
-  25.0,  // Strong earthquake
-  30.0,  // Severe earthquake
+  20.0,  // Minor earthquake
+  30.0,  // Moderate earthquake
+  40.0,  // Strong earthquake
+  50.0,  // Severe earthquake
+  60.0,  // Catastrophic earthquake
+  70.0,  // Doomed earthquake
+  80.0,  // End of the time earthquake
+  90.0,  // ... earthquake
 };
 float amplitude, magnitude;
 // Getter
@@ -27,12 +31,12 @@ float eGetMagnitude(float maxAmplitude) {
   //    <----------d----------> the distance between A0 and A1
 
 #ifdef FORMULA_A
-  magnitude = log10(A0) - log10(maxAmplitude * D); 
+  magnitude = log10(A0) - log10(maxAmplitude * D);
   // magnitude = log10(maxAmplitude) - log10(A0 * D);
 #endif
 #ifdef FORMULA_B
   magnitude = log10(maxAmplitude / A0);
-  magnitude = magnitude*100; // Scale up for easier classification
+  magnitude = magnitude * 100;  // Scale up for easier classification
 #endif
 
   return magnitude;
@@ -42,8 +46,18 @@ float eGetAmplitude(float val = 0.0, float constant = Z_AXIS_CONSTANT) {
   // If parameter is passed in, calculate new amplitude
   if (val != 0.0) {
     amplitude = abs(val);
-    amplitude = (amplitude > constant) ? amplitude : constant + ( constant- amplitude);
+    amplitude = (amplitude > constant) ? amplitude : constant + (constant - amplitude);
   }
   // Otherwise, get the previous amplitude
   return amplitude;
+}
+
+int eGetLevel() {
+  // Get the level of earthquake base on the magnitude calculated
+  for (int i = 0; i <= sizeof(earthquakeThresholds) / sizeof(float) - 1; i++) {
+    if (magnitude <= earthquakeThresholds[i]) {
+      return i;
+    }
+  }
+  return -1;
 }
