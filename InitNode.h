@@ -1,8 +1,8 @@
 // -------------------------------------------------
 // Node Option - Select which node to upload
 // -------------------------------------------------
-// #define SENSOR
-#define PLATFORM
+#define SENSOR
+// #define PLATFORM
 
 // -------------------------------------------------
 // Wifi
@@ -16,7 +16,6 @@
 #ifdef PLATFORM
 #define HOSTNAME "Platform"
 #endif
-
 
 // -------------------------------------------------
 // MPU9250 Option
@@ -44,7 +43,11 @@
 // -------------------------------------------------
 // #define ANONYMOUS
 // #define FIREBASE_VERBOSE
-#define DELAY_TIME 50
+#define DELAY_TIME 100
+
+// #define DEBUG_JSON
+#define FB_SET_METHOD_1  // JSON set
+// #define FB_SET_METHOD_2  // Individual set
 
 // -------------------------------------------------
 // Firebase Value
@@ -76,7 +79,7 @@
 #define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Platform/Signal Strength"
 
 #define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor 1/Magnitude"
-#define EARTHQUAKE_LEVEL_PATH "Earthquake/Sensor 1/Level"
+#define EARTHQUAKE_AMPLITUDE_PATH "Earthquake/Sensor 1/Amplitude"
 
 // -------------------------------------------------
 // Eartquake option
@@ -104,6 +107,99 @@
 #endif
 
 // -------------------------------------------------
+// UDF
+// -------------------------------------------------
+#ifdef SENSOR
+#ifdef FB_SET_METHOD_1
+void getSensorJSON() {
+  fbjson.clear();
+#ifdef ENABLE_ACCEL
+  fbjson.set(SENSOR_NODE_ACCEL_X_PATH, imu_GetAccel(1));
+  fbjson.set(SENSOR_NODE_ACCEL_Y_PATH, imu_GetAccel(2));
+  fbjson.set(SENSOR_NODE_ACCEL_Z_PATH, imu_GetAccel(3));
+#endif
+#ifdef ENABLE_GYRO
+  fbjson.set(SENSOR_NODE_GYRO_X_PATH, imu_GetGyro(1));
+  fbjson.set(SENSOR_NODE_GYRO_Y_PATH, imu_GetGyro(2));
+  fbjson.set(SENSOR_NODE_GYRO_Z_PATH, imu_GetGyro(3));
+#endif
+#ifdef ENABLE_MAGNETO
+  fbjson.set(SENSOR_NODE_MAG_X_PATH, imu_GetMag(1));
+  fbjson.set(SENSOR_NODE_MAG_Y_PATH, imu_GetMag(2));
+  fbjson.set(SENSOR_NODE_MAG_Z_PATH, imu_GetMag(3));
+#endif
+#ifdef ENABLE_TEMP
+  fbjson.set(SENSOR_NODE_TEMP_PATH, imu_GetTemp());
+#endif
+  eSetVal(imu_GetAccel(1), imu_GetAccel(2), imu_GetAccel(3));
+  fbjson.set(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude());
+  fbjson.set(EARTHQUAKE_AMPLITUDE_PATH, eGetAmplitude());
+#ifdef DEBUG_JSON
+  fbjson.toString(Serial, true);
+  Serial.println();
+  Serial.println();
+#endif
+}
+#endif
+
+#ifdef FB_SET_METHOD_2
+void setSensorData() {
+#ifdef ENABLE_ACCEL
+  fb_SetFloat(SENSOR_NODE_ACCEL_X_PATH, imu_GetAccel(1));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_ACCEL_Y_PATH, imu_GetAccel(2));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_ACCEL_Z_PATH, imu_GetAccel(3));
+  delay(DELAY_TIME);
+#endif
+#ifdef ENABLE_GYRO
+  fb_SetFloat(SENSOR_NODE_GYRO_X_PATH, imu_GetGyro(1));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_GYRO_Y_PATH, imu_GetGyro(2));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_GYRO_Z_PATH, imu_GetGyro(3));
+  delay(DELAY_TIME);
+#endif
+#ifdef ENABLE_MAGNETO
+  fb_SetFloat(SENSOR_NODE_MAG_X_PATH, imu_GetMag(1));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_MAG_Y_PATH, imu_GetMag(2));
+  delay(DELAY_TIME);
+  fb_SetFloat(SENSOR_NODE_MAG_Z_PATH, imu_GetMag(3));
+  delay(DELAY_TIME);
+#endif
+#ifdef ENABLE_TEMP
+  fb_SetFloat(SENSOR_NODE_TEMP_PATH, imu_GetTemp());
+  delay(DELAY_TIME);
+#endif
+  eSetVal(imu_GetAccel(1), imu_GetAccel(2), imu_GetAccel(3));
+  fb_SetFloat(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude());
+  delay(DELAY_TIME);
+  fb_SetInt(EARTHQUAKE_AMPLITUDE_PATH, eGetAmplitude());
+  delay(DELAY_TIME);
+}
+#endif
+#endif
+
+void getWiFiJSON() {
+  fbjson.clear();
+#ifdef SENSOR
+  fbjson.set(SENSOR_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
+  fbjson.set(SENSOR_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
+  fbjson.set(SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
+#endif
+#ifdef PLATFORM
+  fbjson.set(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
+  fbjson.set(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
+  fbjson.set(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
+#endif
+}
+// -------------------------------------------------
+// UDF End
+// -------------------------------------------------
+
+
+// -------------------------------------------------
 // Init Node
 // -------------------------------------------------
 #pragma region setup_init
@@ -126,22 +222,10 @@ void initNode() {
   // ------------------------------------------------ Firebase Init
   initFirebase();
   // Send Connection detail
-#ifdef SENSOR
-  fb_SetString(SENSOR_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
-  delay(DELAY_TIME);
-  fb_SetString(SENSOR_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
-  delay(DELAY_TIME);
-  fb_SetString(SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
-  delay(DELAY_TIME);
-#endif
-#ifdef PLATFORM
-  fb_SetString(ALARM_NODE_WIFI_HOSTNAME_PATH, wifi_GetHostname());
-  delay(DELAY_TIME);
-  fb_SetString(ALARM_NODE_WIFI_LOCAL_IP_PATH, wifi_GetLocalIP());
-  delay(DELAY_TIME);
-  fb_SetString(ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH, wifi_GetSignalStrength());
-  delay(DELAY_TIME);
+  getWiFiJSON();  // Get wifi connection information into json
+  updateRTDB();   // Send wifi connection information to rtdb
 
+#ifdef PLATFORM
   // ------------------------------------------------ Server Init
   server.on("/", SendWebsite);
   server.on("/signal_0", handleSignal_0);
@@ -158,3 +242,7 @@ void initNode() {
 #endif
 }
 #pragma endregion setup_init
+
+// -------------------------------------------------
+// Init Node END
+// -------------------------------------------------

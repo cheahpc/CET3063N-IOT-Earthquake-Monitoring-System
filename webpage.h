@@ -1,7 +1,6 @@
 const char main_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
-
     <head>
         <title>Sensor Node Dashboard</title>
         <style>
@@ -225,8 +224,8 @@ const char main_page[] PROGMEM = R"=====(
                     <td class="right" id="eMagnitude"></td>
                 </tr>
                 <tr>
-                    <td class="left bottom">Level</td>
-                    <td class="right bottom" id="eLevel"></td>
+                    <td class="left bottom">Amplitude</td>
+                    <td class="right bottom" id="eAmplitude"></td>
                 </tr>
             </tbody>
         </table>
@@ -314,7 +313,7 @@ const char main_page[] PROGMEM = R"=====(
                     onValue(ref(db, 'Earthquake'), (snapshot) => {
                         // Earthquake
                         document.getElementById('eMagnitude').innerHTML = snapshot.child("Sensor 1/Magnitude").val();
-                        document.getElementById('eLevel').innerHTML     = snapshot.child("Sensor 1/Level").val();
+                        document.getElementById('eAmplitude').innerHTML     = snapshot.child("Sensor 1/Level").val();
                     });
 
                     // Connection -- Set once

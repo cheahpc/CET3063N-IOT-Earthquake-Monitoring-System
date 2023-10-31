@@ -5,19 +5,11 @@
 // -------------------------------------------------
 // Usage - Function
 // -------------------------------------------------
-// fb_SendAccelData();
-// fb_SendEarthquakeMagnitude(float magnitude);
-// fb_SetEarthquakeLevel(int level);
-// fb_GetAccelData(int index);
-// fb_GetEarthquakeLevel();
-// fb_GetEarthquakeMagnitude();
-//
 
-
+FirebaseJson fbjson;
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig fbconfig;
-
 
 // Initialize Firebase
 void initFirebase() {
@@ -52,6 +44,21 @@ void initFirebase() {
 
   // Firebase begin
   Firebase.begin(&fbconfig, &auth);
+}
+
+// -------------------------------------------------
+// Push JSON
+// -------------------------------------------------
+void updateRTDB() {
+  if (Firebase.ready()) {
+    if (Firebase.RTDB.updateNode(&fbdo, "/", &fbjson)) {
+      Serial.println("JSON Sent to RTDB: ");
+    } else {
+      Serial.println(fbdo.errorReason());
+    }
+  } else {
+    Serial.println("FAILED: " + fbdo.errorReason());
+  }
 }
 
 // -------------------------------------------------
