@@ -22,8 +22,8 @@ const float earthquakeThresholds[] = {
 float amplitude, magnitude;
 // Getter
 float eGetMagnitude(float maxAmplitude) {
-  // Ritcher formula A = log(A0) - log(A1 * d)
-  // Ritcher formula B = log(A1/A0)
+  // Richter formula A = log(A0) - log(A1 * d)
+  // Richter formula B = log(A1/A0)
   // A0 = reference constant
   // A1 = sensor amplitude
   // d  = constant
@@ -35,7 +35,7 @@ float eGetMagnitude(float maxAmplitude) {
   // magnitude = log10(maxAmplitude) - log10(A0 * D);
 #endif
 #ifdef FORMULA_B
-  magnitude = log10(maxAmplitude / A0);
+  magnitude = log10(maxAmplitude / A0); // Instead of log10(maxAmplitude / A0*D)
   magnitude = magnitude * 100;  // Scale up for easier classification
 #endif
 

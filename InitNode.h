@@ -1,8 +1,8 @@
 // -------------------------------------------------
 // Node Option - Select which node to upload
 // -------------------------------------------------
-// #define SENSOR
-#define PLATFORM
+#define SENSOR
+// #define PLATFORM
 
 // -------------------------------------------------
 // Wifi Option
@@ -130,13 +130,9 @@ void initNode() {
   // Begin serial
   Serial.begin(115200);
 
-// ------------------------------------------------ MPU9250 Init
 #ifdef SENSOR
+  // ------------------------------------------------ MPU9250 Init
   initMPU9250();
-#endif
-// ------------------------------------------------ Signal Init
-#ifdef PLATFORM
-  initSignal();
 #endif
 
   // ------------------------------------------------ Wifi Init
@@ -149,20 +145,9 @@ void initNode() {
 
 #ifdef PLATFORM
   // ------------------------------------------------ Server Init
-  server.on("/", SendWebsite);
-  // server.on("/signal_0", handleSignal_0);
-  // server.on("/signal_1", handleSignal_1);
-  // server.on("/signal_2", handleSignal_2);
-  // server.on("/signal_3", handleSignal_3);
-  // server.on("/signal_4", handleSignal_4);
-  // server.on("/signal_5", handleSignal_5);
-  // server.on("/signal_6", handleSignal_6);
-  // server.on("/signal_7", handleSignal_7);
-
-  // Start Server
-  server.begin();
-  // Add your web page to the server
-  Serial.println("Web server started");
+  initServer();
+  // ------------------------------------------------ Signal Init
+  initSignal();
 #endif
 }
 #pragma endregion setup_init
@@ -200,14 +185,15 @@ void sensorRoutine() {
     // Update RTDB with new magnitude
     fb_SetFloat(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude(maxAmplitude));
     fb_SetInt(EARTHQUAKE_LEVEL_PATH, eGetLevel());
-
+    Serial.print("Magnitude:");
+    Serial.println(eGetMagnitude(maxAmplitude));
     // Reset maximum amplitude
     maxAmplitude = 0;
     prevT_Magnitude = millis();
   }
 
   if ((millis() - prevT_RTDB) >= tTres_RTDB) {
-    // Send Sensor data
+    // Send Sensor data (Optional)
     // getSensorJSON();
     // updateNodeAsync();
   }

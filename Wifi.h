@@ -1,8 +1,6 @@
 // Initialize all necessary library and values
 #include <ESP8266WiFi.h>
 #ifdef PLATFORM
-// #include "WiFiClient.h"
-// #include "WebServer.h"
 #include <ESP8266WebServer.h>
 #include "webpage.h"
 ESP8266WebServer server(80);  //Server on port 80
@@ -20,6 +18,7 @@ void initWifi() {
     Serial.print(".");
     delay(300);
   }
+  Serial.println("\nWiFi Connected");
 }
 
 String wifi_GetLocalIP() {
