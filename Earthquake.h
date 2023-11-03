@@ -1,5 +1,5 @@
 // -------------------------------------------------
-// Eartquake option
+// Earthquake option
 // -------------------------------------------------
 // #define FORMULA_A
 #define FORMULA_B
@@ -20,6 +20,7 @@ const float earthquakeThresholds[] = {
   90.0,  // ... earthquake
 };
 float amplitude, magnitude;
+
 // Getter
 float eGetMagnitude(float maxAmplitude) {
   // Richter formula A = log(A0) - log(A1 * d)

@@ -16,11 +16,13 @@ void initServer(){
   Serial.println("Web server started");
 }
 
+// Handle root request by sending webpage
 void SendWebsite() {
   Serial.println("sending web page");
   server.send(200, "text/html", main_page);
 }
 
+// Extra button, function not implemented yet.
 void handleBtnMute() {
   Serial.println("Alarm Muted");
   server.send(200, "text/plain", "");  //Send web page

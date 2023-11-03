@@ -21,6 +21,7 @@ void initWifi() {
   Serial.println("\nWiFi Connected");
 }
 
+// Function to get the connection local ip, hostname, and signal strength.
 String wifi_GetLocalIP() {
   return String(WiFi.localIP().toString().c_str());
 }

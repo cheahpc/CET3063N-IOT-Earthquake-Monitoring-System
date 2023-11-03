@@ -1,7 +1,7 @@
 #include "InitNode.h"
 
 void setup() {
-  // Start Everything
+  // Initialize server, wifi, firebase etc
   initNode();
 }
 

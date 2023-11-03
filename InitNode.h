@@ -170,7 +170,7 @@ float currentAmplitude = 0;
 float maxAmplitude = 0;
 
 void sensorRoutine() {
-  // Sample amplitude change
+  // Sample amplitude change every interval
   if ((millis() - prevT_Amplitude) >= tTres_Amplitude_SampleRate) {
     // Sample amplitude
     currentAmplitude = eGetAmplitude(imu_GetAccel(3));
@@ -180,7 +180,7 @@ void sensorRoutine() {
     prevT_Amplitude = millis();
   }
 
-  // Set magnitude base on max amplitude
+  // Set magnitude base on max amplitude every interval
   if ((millis() - prevT_Magnitude) >= tTres_Magnitude_SampleRate) {
     // Update RTDB with new magnitude
     fb_SetFloat(EARTHQUAKE_MAGNITUDE_PATH, eGetMagnitude(maxAmplitude));
@@ -192,17 +192,18 @@ void sensorRoutine() {
     prevT_Magnitude = millis();
   }
 
+  // Send extra sensor value every interval
   if ((millis() - prevT_RTDB) >= tTres_RTDB) {
     // Send Sensor data (Optional)
-    // getSensorJSON();
-    // updateNodeAsync();
+    // getSensorJSON(); // Get the sensor values in to json file
+    // updateNodeAsync(); // Send the compiled json file to RTDB
   }
 }
 #endif
 
 #ifdef PLATFORM
 void platformRoutine() {
-  // loopSignal();
-  server.handleClient();
+  // loopSignal(); // Unimplemented
+  server.handleClient(); // Handle server requests
 }
 #endif
