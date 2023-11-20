@@ -3,18 +3,18 @@
 #include "addons/RTDBHelper.h"
 
 // -------------------------------------------------
-// Usage - Function
+// Firebase Option
 // -------------------------------------------------
-// fb_SendAccelData();
-// fb_SendEarthquakeMagnitude(float magnitude);
-// fb_SetEarthquakeLevel(int level);
-// fb_GetAccelData(int index);
-// fb_GetEarthquakeLevel();
-// fb_GetEarthquakeMagnitude();
-//
+// #define ANONYMOUS
+// #define FIREBASE_VERBOSE
+#define DELAY_TIME 250
+
+// #define DEBUG_JSON
+#define FB_SET_METHOD_1  // JSON set
+// #define FB_SET_METHOD_2  // Individual set
 
 // -------------------------------------------------
-// Firebase
+// Firebase Value
 // -------------------------------------------------
 #ifndef ANONYMOUS
 #define USER_EMAIL "estupido404@gmail.com"
@@ -22,34 +22,37 @@
 #endif
 #define API_KEY "AIzaSyCTZj09mjxN2LfGO_O2gbCziAixP8GOl4M"
 #define DB_URL "https://earthquake-6db21-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+#define SENSOR_NODE_ACCEL_X_PATH "Sensor/1/Accelerometer/X"
+#define SENSOR_NODE_ACCEL_Y_PATH "Sensor/1/Accelerometer/Y"
+#define SENSOR_NODE_ACCEL_Z_PATH "Sensor/1/Accelerometer/Z"
+#define SENSOR_NODE_GYRO_X_PATH "Sensor/1/Gyroscope/X"
+#define SENSOR_NODE_GYRO_Y_PATH "Sensor/1/Gyroscope/Y"
+#define SENSOR_NODE_GYRO_Z_PATH "Sensor/1/Gyroscope/Z"
+#define SENSOR_NODE_MAG_X_PATH "Sensor/1/Magnetometer/X"
+#define SENSOR_NODE_MAG_Y_PATH "Sensor/1/Magnetometer/Y"
+#define SENSOR_NODE_MAG_Z_PATH "Sensor/1/Magnetometer/Z"
+#define SENSOR_NODE_TEMP_PATH "Sensor/1/Temperature/"
+
+#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Connection/Sensor 1/Hostname"
+#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Connection/Sensor 1/Local IP"
+#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Sensor 1/Signal Strength"
+
+#define ALARM_NODE_WIFI_HOSTNAME_PATH "Connection/Platform/Hostname"
+#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Connection/Platform/Local IP"
+#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Connection/Platform/Signal Strength"
+
+#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Sensor 1/Magnitude"
+#define EARTHQUAKE_LEVEL_PATH "Earthquake/Sensor 1/Level"
+
+// -------------------------------------------------
+// Usage - Function
+// -------------------------------------------------
+
+FirebaseJson fbjson;
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig fbconfig;
-bool signupOK = false;
-// -------------------------------------------------
-// Firebase Node String
-// -------------------------------------------------
-#define SENSOR_NODE_ACCEL_X_PATH "Sensor Node/Accelerometer/X"
-#define SENSOR_NODE_ACCEL_Y_PATH "Sensor Node/Accelerometer/Y"
-#define SENSOR_NODE_ACCEL_Z_PATH "Sensor Node/Accelerometer/Z"
-#define SENSOR_NODE_GYRO_X_PATH "Sensor Node/Gyro/X"
-#define SENSOR_NODE_GYRO_Y_PATH "Sensor Node/Gyro/Y"
-#define SENSOR_NODE_GYRO_Z_PATH "Sensor Node/Gyro/Z"
-#define SENSOR_NODE_MAG_X_PATH "Sensor Node/Magnetometer/X"
-#define SENSOR_NODE_MAG_Y_PATH "Sensor Node/Magnetometer/Y"
-#define SENSOR_NODE_MAG_Z_PATH "Sensor Node/Magnetometer/Z"
-#define SENSOR_NODE_TEMP_PATH "Sensor Node/Temp/Celcius"
-
-#define SENSOR_NODE_WIFI_HOSTNAME_PATH "Sensor Node/WiFi/Hostname"
-#define SENSOR_NODE_WIFI_LOCAL_IP_PATH "Sensor Node/WiFi/Local IP"
-#define SENSOR_NODE_WIFI_SIGNAL_STRENGTH_PATH "Sensor Node/WiFi/Signal Strength"
-
-#define ALARM_NODE_WIFI_HOSTNAME_PATH "Alarm Node/WiFi/Hostname"
-#define ALARM_NODE_WIFI_LOCAL_IP_PATH "Alarm Node/WiFi/Local IP"
-#define ALARM_NODE_WIFI_SIGNAL_STRENGTH_PATH "Sensor Node/WiFi/Signal Strength"
-
-#define EARTHQUAKE_MAGNITUDE_PATH "Earthquake/Magnitude"
-#define EARTHQUAKE_LEVEL_PATH "Earthquake/Level"
 
 // Initialize Firebase
 void initFirebase() {
@@ -65,8 +68,7 @@ void initFirebase() {
 // Anonymous sign-up (optional)
 #ifdef ANONYMOUS
   if (Firebase.signUp(&fbconfig, &auth, "", "")) {
-    Serial.print("signUP OK");
-    signupOK = true;
+    Serial.print("New user signed up!");
   } else {
     Serial.printf("%s\n", fbconfig.signer.signupError.message.c_str());
   }
@@ -88,59 +90,86 @@ void initFirebase() {
 }
 
 // -------------------------------------------------
-// Custom Float
+// Push JSON
 // -------------------------------------------------
+void updateNode() {
+  if (Firebase.ready()) {
+    if (Firebase.RTDB.updateNode(&fbdo, "/", &fbjson)) {
+#ifdef FIREBASE_VERBOSE
+      Serial.println("JSON Sent to RTDB: ");
+#endif
+    } else {
+      Serial.println(fbdo.errorReason());
+    }
+  } else {
+    Serial.println("FAILED: " + fbdo.errorReason());
+  }
+}
+
+void updateNodeAsync() {
+  if (Firebase.ready()) {
+    if (Firebase.RTDB.updateNodeAsync(&fbdo, "/", &fbjson)) {
+#ifdef FIREBASE_VERBOSE
+      Serial.println("JSON Sent to RTDB: ");
+#endif
+    } else {
+      Serial.println(fbdo.errorReason());
+    }
+  } else {
+    Serial.println("FAILED: " + fbdo.errorReason());
+  }
+}
+
+// -------------------------------------------------
+// Custom Int Float
+// -------------------------------------------------
+void fb_SetInt(String dataPath, int value) {
+  // Verify Firebase connection
+  if (Firebase.ready()) {
+    // Store data to respective datapath
+    if (Firebase.RTDB.setInt(&fbdo, dataPath, value)) {
+#ifdef FIREBASE_VERBOSE
+      Serial.println();
+      Serial.print(value);
+      Serial.print(" - successfully saved to: " + fbdo.dataPath());
+      Serial.println(" (" + fbdo.dataType() + ")");
+#endif
+    } else {
+      Serial.println("FAILED: " + fbdo.errorReason());
+    };
+  }
+}
 void fb_SetFloat(String dataPath, float value) {
   // Verify Firebase connection
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setFloat(&fbdo, dataPath, value)) {
-      #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value);
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
-      #endif
+#endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
   }
-}
-
-float fb_GetFloat(String dataPath) {
-  // Verify Firebase connection
-  if (Firebase.ready()) {
-    // Store data to respective datapath
-    if (Firebase.RTDB.getFloat(&fbdo, dataPath)) {
-      if (fbdo.dataType() == "boolean") {
-        #ifdef FIREBASE_VERBOSE
-        Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.floatData() + " (" + fbdo.dataType() + ")");
-        return fbdo.floatData();
-        #endif
-      }
-    } else {
-      Serial.println("FAILED: " + fbdo.errorReason());
-    };
-  } else {
-    Serial.println("Error: Firebase not ready.");
-  }
-  return 0.0;
 }
 
 // -------------------------------------------------
-// Custom String
+// Set String
 // -------------------------------------------------
 void fb_SetString(String dataPath, String value) {
   // Verify Firebase connection
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setString(&fbdo, dataPath, value)) {
-      #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value);
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
-      #endif
+#endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -149,17 +178,19 @@ void fb_SetString(String dataPath, String value) {
   }
 }
 
-String fb_GetString(String dataPath) {
+// -------------------------------------------------
+// Get String
+// -------------------------------------------------
+
+String fb_Get(String dataPath) {
   // Verify Firebase connection
   if (Firebase.ready()) {
     // Store data to respective datapath
-    if (Firebase.RTDB.getString(&fbdo, dataPath)) {
-      if (fbdo.dataType() == "string") {
-        #ifdef FIREBASE_VERBOSE
-        Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.stringData() + " (" + fbdo.dataType() + ")");
-        return fbdo.stringData();
-        #endif
-      }
+    if (Firebase.RTDB.get(&fbdo, dataPath)) {
+#ifdef FIREBASE_VERBOSE
+      Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.stringData() + " (" + fbdo.dataType() + ")");
+#endif
+      return fbdo.to<String>();
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -169,6 +200,7 @@ String fb_GetString(String dataPath) {
   return "";
 }
 
+
 // -------------------------------------------------
 // Custom Boolean
 // -------------------------------------------------
@@ -177,12 +209,12 @@ void fb_SetBool(String dataPath, bool value) {
   if (Firebase.ready()) {
     // Store data to respective datapath
     if (Firebase.RTDB.setBool(&fbdo, dataPath, value)) {
-      #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
       Serial.println();
       Serial.print(value ? "true" : "false");
       Serial.print(" - successfully saved to: " + fbdo.dataPath());
       Serial.println(" (" + fbdo.dataType() + ")");
-      #endif
+#endif
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
     };
@@ -197,10 +229,10 @@ bool fb_GetBool(String dataPath) {
     // Store data to respective datapath
     if (Firebase.RTDB.getBool(&fbdo, dataPath)) {
       if (fbdo.dataType() == "boolean") {
-        #ifdef FIREBASE_VERBOSE
+#ifdef FIREBASE_VERBOSE
         Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.boolData() + " (" + fbdo.dataType() + ")");
+#endif
         return fbdo.boolData();
-        #endif
       }
     } else {
       Serial.println("FAILED: " + fbdo.errorReason());
@@ -209,46 +241,4 @@ bool fb_GetBool(String dataPath) {
     Serial.println("Error: Firebase not ready.");
   }
   return false;
-}
-
-// -------------------------------------------------
-// Custom Integer
-// -------------------------------------------------
-void fb_SetInt(String dataPath, int value) {
-  // Verify Firebase connection
-  if (Firebase.ready()) {
-    // Store data to respective datapath
-    if (Firebase.RTDB.setInt(&fbdo, dataPath, value)) {
-      #ifdef FIREBASE_VERBOSE
-      Serial.println();
-      Serial.print(value);
-      Serial.print(" - successfully saved to: " + fbdo.dataPath());
-      Serial.println(" (" + fbdo.dataType() + ")");
-      #endif
-    } else {
-      Serial.println("FAILED: " + fbdo.errorReason());
-    };
-  } else {
-    Serial.println("Error: Firebase not ready.");
-  }
-}
-
-bool fb_GetInt(String dataPath) {
-  // Verify Firebase connection
-  if (Firebase.ready()) {
-    // Store data to respective datapath
-    if (Firebase.RTDB.getInt(&fbdo, dataPath)) {
-      if (fbdo.dataType() == "boolean") {
-        #ifdef FIREBASE_VERBOSE
-        Serial.println("Successful READ from " + fbdo.dataPath() + ": " + fbdo.intData() + " (" + fbdo.dataType() + ")");
-        return fbdo.intData();
-        #endif
-      }
-    } else {
-      Serial.println("FAILED: " + fbdo.errorReason());
-    };
-  } else {
-    Serial.println("Error: Firebase not ready.");
-  }
-  return 0;
 }

@@ -1,0 +1,38 @@
+{
+  "Alarm Node": {
+    "WiFi": {
+      "Hostname": "ALARM_NODE",
+      "Local IP": "192.168.0.182",
+      "Signal Strength": "-67"
+    }
+  },
+  "Earthquake": {
+    "Level": 0,
+    "Magnitude": 8.33214
+  },
+  "Sensor Node": {
+    "Accelerometer": {
+      "X": 7.19936,
+      "Y": 5.2433,
+      "Z": 3.23457
+    },
+    "Gyro": {
+      "X": -17.34756,
+      "Y": 19.81707,
+      "Z": -37.92683
+    },
+    "Magnetometer": {
+      "X": -4506.1499,
+      "Y": 2457.30005,
+      "Z": 3.9
+    },
+    "Temp": {
+      "Celcius": 29.89867
+    },
+    "WiFi": {
+      "Hostname": "SENSOR_NODE",
+      "Local IP": "192.168.0.139",
+      "Signal Strength": "-65"
+    }
+  }
+}

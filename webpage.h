@@ -5,173 +5,398 @@ const char main_page[] PROGMEM = R"=====(
     <head>
         <title>Sensor Node Dashboard</title>
         <style>
-            body {
-                background-color: #D5F2FE;
+            .overlay {
                 font-family: sans-serif;
-                color: #5088DC;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .form input {
+                border-radius: 10px;
+                outline: 0;
+                background: #fff;
+                width: 80%;
+                border: none;
+                margin-bottom: 15px;
+                font-size: 20px;
+                padding: 10px 20px;
+            }
+
+            /* Login form style */
+            .login-form {
+                width: 400px;
+                height: 350px;
+                border-radius: 20px;
+                background-color: #daf8e3;
+                margin: auto;
+                padding: 20px;
+                text-align: center;
+            }
+
+            body {
+                background-color: #daf8e3;
+                font-family: sans-serif;
+                color: #0086ad;
                 text-align: center;
                 margin: 0 auto;
             }
 
             table {
-                width: 33%;
+                width: 800px;
                 border-collapse: collapse;
-                border-radius: 20px;
-                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+                border-radius: 25px;
+                box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.25);
                 margin: 0 auto;
+
             }
 
             th,
             td {
-                color: #353535;
-                border: none;
-                padding: 5px;
+                border-width: 1px;
+                border-style: solid;
+                padding: 10px;
                 text-align: center;
             }
 
-            .sensor-node {
-                background-color: #a3f0ff;
+            .header_bottom {
+                border-bottom-width: 2px;
             }
 
-            .accelerometer {
+            .top {
+                border-top: none;
+            }
+
+            .left {
+                border-left: none;
+            }
+
+            .right {
+                border-right: none;
+            }
+
+            .bottom {
+                border-bottom: none;
+            }
+
+            .ml1 {
+                margin-left: 10px;
+            }
+
+            .ml2 {
+                margin-left: 20px;
+            }
+
+            .ml3 {
+                margin-left: 30px;
+            }
+
+            .ml4 {
+                margin-left: 40px;
+            }
+
+            .ml5 {
+                margin-left: 50px;
+            }
+
+            .connection-table {
+                color: #0086ad;
+                background-color: none;
+            }
+
+            .sensor-table {
                 margin-top: 20px;
-                background-color: #c6ffe6;
+                color: #0086ad;
+                background-color: none;
             }
 
-            .alarm-node {
-                background-color: #a3f0ff;
-            }
-
-            .earthquake {
-                background-color: #ffc6c6;
+            .earthquake-table {
+                margin-top: 20px;
+                color: #fff;
+                background-color: #00388c;
             }
 
             button {
-                background-color: #ff4400;
                 color: #ffffff;
+                background-color: #008000;
                 border-radius: 20px;
                 border: none;
-                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+                box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.2);
                 margin-top: 40px;
                 font-size: 20px;
                 font-weight: bolder;
-                padding: 20px;
+                padding: 20px 40px;
+
             }
 
         </style>
     </head>
 
     <body>
-        <h1>Earthquake Monitoring Dashboard</h1>
-        <h2>Sensor Node</h2>
-        <table class="sensor-node">
+        <div class="overlay form" id="loginform">
+            <div class="login-form">
+                <h1>Login</h1>
+                <input id="loginEmail" type="email" placeholder="Email">
+                <input id="loginPassword" type="password" placeholder="Password">
+                <button id="btnLogin">Login</button>
+            </div>
+        </div>
+
+        <h1>Realtime Earthquake Monitoring Dashboard</h1>
+        <h2>Connection:<span class="ml3" id="date">mm/dd/yyyy</span><span class="ml3" id="time">00:00:00</span></h2>
+
+        <table class="connection-table">
             <thead>
                 <tr>
-                    <th>WIFI</th>
-                    <th>Value</th>
+                    <th class="top left header_bottom">WIFI</th>
+                    <th class="header_bottom top">Platform</th>
+                    <th class="header_bottom top right">Sensor 1</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Node Hostname</td>
-                    <td id="nodeHostname"></td>
+                    <td class="left">Hostname</td>
+                    <td id="platformHostname"></td>
+                    <td class="right" id="sensor1Hostname"></td>
                 </tr>
                 <tr>
-                    <td>Node Local IP</td>
-                    <td id="nodeLocalIP"></td>
+                    <td class="left">Local IP</td>
+                    <td id="platformLocalIP"></td>
+                    <td class="right" id="sensor1LocalIP"></td>
+
                 </tr>
                 <tr>
-                    <td>Node WiFi Signal Strength</td>
-                    <td id="nodeWiFiSignalStrength"></td>
+                    <td class="left bottom">Signal Strength</td>
+                    <td class="bottom" id="platformWiFiSignalStrength"></td>
+                    <td class="right bottom" id="sensor1SignalStrength"></td>
                 </tr>
             </tbody>
         </table>
 
-        <table class="accelerometer">
+        <!-- <table class="sensor-table">
             <thead>
                 <tr>
-                    <th>Accelerometer</th>
-                    <th>Value</th>
+                    <th class="header_bottom left top">Sensor</th>
+                    <th class="header_bottom top">Accelerometer</th>
+                    <th class="header_bottom top">Gyroscope</th>
+                    <th class="header_bottom top">Magnetometer</th>
+                    <th class="header_bottom top right">Temperature</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>X</td>
-                    <td id="accelerometerX"></td>
+                    <td class="left">X</td>
+                    <td id="sensorAccelX"></td>
+                    <td id="sensorGyroX"></td>
+                    <td id="sensorMagX"></td>
+                    <td class="right bottom" id="sensorTemp" rowspan="3"></td>
                 </tr>
                 <tr>
-                    <td>Y</td>
-                    <td id="accelerometerY"></td>
+                    <td class="left">Y</td>
+                    <td id="sensorAccelY"></td>
+                    <td id="sensorGyroY"></td>
+                    <td id="sensorMagY"></td>
                 </tr>
                 <tr>
-                    <td>Z</td>
-                    <td id="accelerometerZ"></td>
+                    <td class="left bottom">Z</td>
+                    <td class="bottom" id="sensorAccelZ"></td>
+                    <td class="bottom" id="sensorGyroZ"></td>
+                    <td class="bottom" id="sensorMagZ"></td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
 
-        <h2>Alarm Node</h2>
-
-        <table class="alarm-node">
+        <table class="earthquake-table">
             <thead>
                 <tr>
-                    <th>WIFI</th>
-                    <th>Value</th>
+                    <th class="header_bottom top left">Earthquake</th>
+                    <th class="header_bottom top right">Sensor 1</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Node Hostname</td>
-                    <td id="alarmNodeHostname"></td>
+                    <td class="left">Magnitude</td>
+                    <td class="right" id="eMagnitude"></td>
                 </tr>
                 <tr>
-                    <td>Node LocalIP</td>
-                    <td id="alarmNodeLocalIP"></td>
+                    <td class="left bottom">Level</td>
+                    <td class="right bottom" id="eLevel"></td>
+
                 </tr>
                 <tr>
-                    <td>Node WiFi Signal Strength</td>
-                    <td id="alarmNodeWiFiSignalStrength"></td>
+                    <td class="left bottom">Classification</td>
+                    <td class="right bottom" id="eClass"></td>
                 </tr>
             </tbody>
         </table>
-
-        <h2>Earthquake</h2>
-
-        <table class="earthquake">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Magnitude</td>
-                    <td id="earthquakeMagnitude"></td>
-                </tr>
-                <tr>
-                    <td>Level</td>
-                    <td id="earthquakeLevel"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <button id="snoozeAlarmButton">Snooze Alarm</button>
-
-        <script>
-            // Update the sensor node data every 1 second
-            setInterval(updateSensorNodeData, 1000);
-
-            // Snooze the alarm when the snooze alarm button is clicked
-            document.getElementById("snoozeAlarmButton").addEventListener("click", function () {
-                // TODO: Implement the snooze alarm functionality
-            });
-
-            function updateSensorNodeData() {
-                // TODO: Implement the sensor node data update functionality
-            }
-        </script>
+        <!-- <button type="button" id="btnMute">Mute Alarm</button> -->
     </body>
+
+    <script type="module">
+        // Close the overlay when the close button is clicked
+        // ---------------------------------------------------
+        // Firebase
+        // ---------------------------------------------------
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+        import { getDatabase, ref, get, set, child, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCTZj09mjxN2LfGO_O2gbCziAixP8GOl4M",
+            authDomain: "earthquake-6db21.firebaseapp.com",
+            databaseURL: "https://earthquake-6db21-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "earthquake-6db21",
+            storageBucket: "earthquake-6db21.appspot.com",
+            messagingSenderId: "1073825058009",
+            appId: "1:1073825058009:web:ae634796aa468b037442c8"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const auth = getAuth();
+        var email = "";
+        var password = "";
+
+        // ---------------------------------------------------
+        // Firebase End
+        // ---------------------------------------------------
+        setInterval(function () {
+            // updateData();
+            var date = new Date();
+            var time = date.toLocaleTimeString();
+            var dateString = date.toLocaleDateString();
+            document.getElementById("time").innerHTML = time;
+            document.getElementById("date").innerHTML = dateString;
+        }, 50);
+
+        // ---------------------------------------------------
+        // Btn
+        // ---------------------------------------------------
+        function Login() {
+            email = document.getElementById('loginEmail').value;
+            password = document.getElementById('loginPassword').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    // alert("Logged In successful");
+                    // Remove login overlay
+                    document.getElementById('loginform').remove();
+
+                    // Listen to RTDB and update value
+                    // onValue(ref(db, 'Sensor/1'), (snapshot) => {
+                    //     const data = snapshot.val();
+                    //     // MPU9250
+                    //     document.getElementById('sensorAccelX').innerHTML = data.Accelerometer.X;
+                    //     document.getElementById('sensorAccelY').innerHTML = data.Accelerometer.Y;
+                    //     document.getElementById('sensorAccelZ').innerHTML = data.Accelerometer.Z;
+                    //     document.getElementById('sensorGyroX').innerHTML = data.Gyroscope.X;
+                    //     document.getElementById('sensorGyroY').innerHTML = data.Gyroscope.Y;
+                    //     document.getElementById('sensorGyroZ').innerHTML = data.Gyroscope.Z;
+                    //     document.getElementById('sensorMagX').innerHTML = data.Magnetometer.X;
+                    //     document.getElementById('sensorMagY').innerHTML = data.Magnetometer.Y;
+                    //     document.getElementById('sensorMagZ').innerHTML = data.Magnetometer.Z;
+                    //     document.getElementById('sensorTemp').innerHTML = data.Temperature;
+                    // });
+
+                    onValue(ref(db, 'Earthquake'), (snapshot) => {
+                        // Earthquake
+                        // Open connection
+                        // var xhttp = new XMLHttpRequest();
+
+                        document.getElementById('eMagnitude').innerHTML = snapshot.child("Sensor 1/Magnitude").val();
+                        document.getElementById('eLevel').innerHTML = snapshot.child("Sensor 1/Level").val();
+
+                        switch (snapshot.child("Sensor 1/Level").val()) {
+                            case 0:
+                                document.getElementById('eClass').innerHTML = "No earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#00388c"
+                                // xhttp.open("PUT", "signal_0", false);
+                                break;
+                            case 1:
+                                document.getElementById('eClass').innerHTML = "Minor earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#008000"
+                                // xhttp.open("PUT", "signal_1", false);
+                                break;
+                            case 2:
+                                document.getElementById('eClass').innerHTML = "Regular earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#bdb300"
+                                // xhttp.open("PUT", "signal_2", false);
+                                break;
+                            case 3:
+                                document.getElementById('eClass').innerHTML = "Serious earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#d47800"
+                                // xhttp.open("PUT", "signal_3", false);
+                                break;
+                            case 4:
+                                document.getElementById('eClass').innerHTML = "Severe earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#ff6e6e"
+                                // xhttp.open("PUT", "signal_4", false);
+                                break;
+                            case 5:
+                                document.getElementById('eClass').innerHTML = "Catastrophic earthquake";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#E00"
+                                // xhttp.open("PUT", "signal_5", false);
+                                break;
+                            case 6:
+                                document.getElementById('eClass').innerHTML = "Find new earth";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#A00"
+                                // xhttp.open("PUT", "signal_6", false);
+                                break;
+                            case 7:
+                                document.getElementById('eClass').innerHTML = "....";
+                                document.querySelector(".earthquake-table").style.backgroundColor = "#222"
+                                // xhttp.open("PUT", "signal_7", false);
+                                break;
+                            default:
+                                document.getElementById('eClass').innerHTML = "Find new earth";
+                                // xhttp.open("PUT", "signal_8", false);
+                                break;
+                        }
+                        // Send message to nodeMCU
+                        // xhttp.send();
+                    });
+
+                    // Connection -- Set once
+                    get(child(ref(db), 'Connection')).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            document.getElementById('platformHostname').innerHTML = snapshot.child("Platform/Hostname").val();
+                            document.getElementById('platformLocalIP').innerHTML = snapshot.child("Platform/Local IP").val();
+                            document.getElementById('platformWiFiSignalStrength').innerHTML = snapshot.child("Platform/Signal Strength").val();
+                            document.getElementById('sensor1Hostname').innerHTML = snapshot.child("Sensor 1/Hostname").val();
+                            document.getElementById('sensor1LocalIP').innerHTML = snapshot.child("Sensor 1/Local IP").val();
+                            document.getElementById('sensor1SignalStrength').innerHTML = snapshot.child("Sensor 1/Signal Strength").val();
+                        } else {
+                            console.log("No connection data available");
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(errorMessage);
+                });
+        }
+        function Mute() {
+            // TODO: To implement something here
+            // var xhttp = new XMLHttpRequest();
+            // xhttp.open("PUT", "btnMute", false);
+            // xhttp.send();
+        }
+
+        document.querySelector("#btnLogin").addEventListener('click', Login);
+        // document.querySelector("#btnMute").addEventListener('click', Mute);
+    </script>
+
 
 </html>
 
